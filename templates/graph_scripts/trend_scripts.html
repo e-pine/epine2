@@ -1,0 +1,41 @@
+<script>
+  // Access the canvas element
+  var lineChartCanvas = $('#salesbarChart').get(0).getContext('2d');
+
+  // Extract the year labels and differences from the 'overall' dictionary
+  var years = [];
+  var differences = [];
+  {% for year, difference in overall.items %}
+    years.push('{{ year }}');
+    differences.push('{{ difference|default:"0" }}');
+  {% endfor %}
+  
+
+  // Define the line chart data
+  var lineChartData = {
+    labels: years,
+    datasets: [
+      {
+        label: '',
+        fill: false, // Set to false to create a line without filling the area below
+        backgroundColor: 'rgba(44, 80, 241, 0.427',
+        borderColor: 'rgba(44, 80, 241, 0.427',
+        data: differences,
+      }
+    ]
+  };
+
+  // Create the line chart
+  var lineChart = new Chart(lineChartCanvas, {
+    type: 'line',
+    data: lineChartData,
+    options: {
+      responsive: true,
+      scales: {
+        y: {
+          beginAtZero: true
+        }
+      }
+    }
+  });
+</script>

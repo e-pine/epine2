@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block content %}
+<form action="" method="POST">
+    {% csrf_token %}
+    <div class="form-group">
+        <input type="text" class="form-control" name="new-statistic">
+        <button class="btn btn-primary mt-3">+ add</button>
+    </div>
+</form>
+{% if qs %}
+<ul>
+    {% for el in qs %}
+    <li><a href="{{el.get_absolute_url}}">{{el.name}}</a></li>
+    {% endfor %}
+</ul>
+{% endif %}
+{% endblock content %}
+
+{% block javascript %}
+{% endblock javascript %}

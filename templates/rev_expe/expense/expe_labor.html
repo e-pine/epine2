@@ -1,0 +1,150 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Labor{% endblock title %}
+{% block content %}
+{% load custom_filters %}
+<div class="content-header">
+  <div class="container-fluid">
+    <div class="row mb-2">
+      <div class="col-sm-6">
+        <h3>Expense</h3>
+     </div>
+     <div class="col-sm-6">
+        <ol class="breadcrumb float-sm-right">
+          <li class="breadcrumb-item active"><a href="{% url 'expe_planting' %}">Planting</a></li>
+          <li class="breadcrumb-item active">Labor</li>
+          <li class="breadcrumb-item"><a href="{% url 'expe_fer_pes' %}">Fertilizer and Pesticides</a></li>
+        </ol>
+      </div>
+  </div><!-- /.container-fluid -->
+  </div>
+  <canvas id="workerExpenseBarChart" style="min-height: 400px; max-height: 400px;"></canvas>
+</div>
+
+<div class="content-footer">
+    <div class="container-fluid">
+      <div class="row mt-2">
+        <div class="col-sm-6">
+        </div>
+        <div class="col-sm-6">
+          <ol class="float-sm-right">
+            <a href="#" class="btn btn-primary" data-toggle="modal" data-target="#Moadal">Add</a>
+            <div class="modal fade" id="Moadal" tabindex="-1" role="dialog" aria-labelledby="MoadalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                  <div class="modal-content">
+                    <div class="modal-body">
+                      <div class="float-right">
+                        <a href="{% url 'expe_labor' %}">
+                          <button type="button" class="close" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                          </button>
+                        </a>
+                      </div>
+                      <form method="post">
+                        {% csrf_token %}
+                        <div class="form-group">
+                          {{work_form}}
+                        </div>
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+              </div>
+          </ol>
+        </div>
+      </div><!-- /.row -->
+    </div><!-- /.container-fluid -->
+</div>
+
+<div class="col-md-12">
+  <div class="tile">
+      <div class="tile-body">
+          <div class="table-responsive">
+              <div id="sampleTable_wrapper" class="dataTables_wrapper container-fluid dt-bootstrap4 no-footer">
+                  <div class="row">
+                      <div class="col-sm-12">
+                          <table class="table table-hover table-bordered dataTable no-footer" id="sampleTable" role="grid" aria-describedby="sampleTable_info">
+                              <thead>
+                                  <tr role="row">
+                                      <th class="sorting_asc" tabindex="0" aria-controls="sampleTable" rowspan="1" colspan="1"  style="width: 102.141px;">Name</th>
+                                      <th class="sorting" tabindex="0" aria-controls="sampleTable" rowspan="1" colspan="1"  style="width: 102.141px;">Price to Pays</th>
+                                      <th class="sorting" tabindex="0" aria-controls="sampleTable" rowspan="1" colspan="1"  style="width: 102.141px;">Work On</th>
+                                      <th class="sorting" tabindex="0" aria-controls="sampleTable" rowspan="1" colspan="1"  style="width: 102.141px;">Days</th>
+                                      <th class="sorting" tabindex="0" aria-controls="sampleTable" rowspan="1" colspan="1"  style="width: 102.141px;">Total</th>
+                                      <th class="sorting" tabindex="0" aria-controls="sampleTable" rowspan="1" colspan="1"  style="width: 102.141px;">Date</th>
+                                      
+                                      <th class="sorting" tabindex="0" aria-controls="sampleTable" rowspan="1" colspan="1"  style="width: 102.141px;">Action</th>
+                                  </tr>
+                              </thead>
+                              <tbody>
+                                {% for year, expenses in worker_expenses_by_year.items %}
+                                {% for expense in expenses %}
+                                      <tr role="row" class="odd">
+                                          <td class="sorting_1">{{ expense.name }}</td>
+                                          <td>Php. {{ expense.price_pay|format_number }}</td>
+                                          <td>{{ expense.workers }}</td>
+                                          <td>{{ expense.days }}</td>
+                                          <td>Php. {{ expense.total|format_number|default:"N/A" }}</td>
+                                          <td>{{ expense.date }}</td>
+                                          
+                                          <td class="text-center"><a href="{% url 'work_expense_update' expense.id %}"><i class="fas fa-edit"></i></a></td>
+                                        </tr>
+                                      {% endfor %}
+                                  {% endfor %}
+                              </tbody>
+                          </table>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </div>
+</div>
+<script>
+  // Get data from Django context
+  var workerExpenseData = [
+      {% for year, expenses in worker_expenses_by_year.items reversed %}
+          {
+              year: '{{ year }}',
+              total: {% for expense in expenses %}{{ expense.total|default:0 }}{% if not forloop.last %} + {% endif %}{% endfor %},
+          },
+      {% endfor %}
+  ];
+
+  // Extract years and totals from workerExpenseData
+  var workerExpenseYears = workerExpenseData.map(item => item.year);
+  var workerExpenseTotals = workerExpenseData.map(item => item.total);
+
+  // Create a bar chart for worker expenses
+  var workerExpenseBarChartCanvas = document.getElementById('workerExpenseBarChart').getContext('2d');
+  var workerExpenseBarChart = new Chart(workerExpenseBarChartCanvas, {
+      type: 'bar',
+      data: {
+          labels: workerExpenseYears,
+          datasets: [{
+              label: 'Total Worker Expenses',
+              data: workerExpenseTotals,
+              backgroundColor: 'rgba(255, 99, 132, 0.2)', // Adjust color as needed
+              borderColor: 'rgba(255, 99, 132, 1)', // Adjust color as needed
+              borderWidth: 1
+          }]
+      },
+      options: {
+          scales: {
+              y: {
+                  beginAtZero: true
+              }
+          }
+      }
+  });
+</script>
+
+{% include 'graph_scripts/expe_scripts.html' %}
+{% endblock content %}
+
+{% block extrascripts %}
+    <script type="text/javascript" src="{% static 'js/plugins/jquery.dataTables.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/plugins/dataTables.bootstrap.min.js' %}"></script>
+    <script type="text/javascript">$('#sampleTable').DataTable();</script>
+{% endblock extrascripts %}

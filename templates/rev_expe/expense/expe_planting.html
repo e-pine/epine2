@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Planting{% endblock title %}
+{% block content %}
+{% load custom_filters %}
+<div class="content-header">
+  <div class="container-fluid">
+    <div class="row mb-2">
+      <div class="col-sm-6">
+        <h3>Expenses</h3>
+     </div>
+     <div class="col-sm-6">
+        <ol class="breadcrumb float-sm-right">
+          <li class="breadcrumb-item active">Planting</li>
+          <li class="breadcrumb-item"><a href="{% url 'expe_labor' %}">Labor</a></li>
+          <li class="breadcrumb-item"><a href="{% url 'expe_fer_pes' %}">Fertilizer and Pesticides</a></li>
+        </ol>
+      </div>
+  </div><!-- /.container-fluid -->
+  </div>
+</div>
+
+<canvas id="cropBarChart" style="min-height: 400px; max-height: 400px;"></canvas>
+
+<div class="col-md-12">
+  <div class="tile">
+      <div class="tile-body">
+          <div class="table-responsive">
+              <div id="sampleTable_wrapper" class="dataTables_wrapper container-fluid dt-bootstrap4 no-footer">
+                  <div class="row">
+                      <div class="col-sm-12">
+                          <table class="table table-hover table-bordered dataTable no-footer" id="sampleTable" role="grid" aria-describedby="sampleTable_info">
+                              <thead>
+                                  <tr role="row">
+                                      <th class="sorting_asc" tabindex="0" aria-controls="sampleTable" rowspan="1" colspan="1"  style="width: 102.141px;">Variety</th>
+                                      <th class="sorting" tabindex="0" aria-controls="sampleTable" rowspan="1" colspan="1"  style="width: 102.141px;">Number Planted</th>
+                                      <th class="sorting" tabindex="0" aria-controls="sampleTable" rowspan="1" colspan="1"  style="width: 102.141px;">Date</th>
+                                      <th class="sorting" tabindex="0" aria-controls="sampleTable" rowspan="1" colspan="1"  style="width: 102.141px;">Expense</th>
+                                  </tr>
+                              </thead>
+                              <tbody>
+                                {% for year, crops_by_year in crops_by_year.items %}
+                                 {% for crop in crops_by_year %}
+                                      <tr role="row" class="odd">
+                                          <td class="sorting_1">{{ crop.category }}</td>
+                                          <td>{{ crop.number_planted|format_number }} pcs</td>
+                                          <td>{{ crop.plant_date }}</td>
+                                          <td>Php. {{ crop.calculate_total|format_number|default:"N/A" }}</td>
+                                      </tr>
+                                      {% endfor %}
+                                  {% endfor %}
+                              </tbody>
+                          </table>
+                      </div>
+                      
+                  </div>
+              </div>
+          </div>
+      </div>
+  </div>
+</div>
+<script>
+    // Get data from Django context
+    var cropData = [
+        {% for year, crops_by_year in crops_by_year.items reversed %}
+            {
+                year: '{{ year }}',
+                total: {% for crop in crops_by_year %}{{ crop.calculate_total|default:0 }}{% if not forloop.last %} + {% endif %}{% endfor %},
+            },
+        {% endfor %}
+    ];
+
+    // Extract years and totals from cropData
+    var years = cropData.map(item => item.year);
+    var totals = cropData.map(item => item.total);
+
+    // Create a bar chart
+    var cropBarChartCanvas = document.getElementById('cropBarChart').getContext('2d');
+    var cropBarChart = new Chart(cropBarChartCanvas, {
+        type: 'bar',
+        data: {
+            labels: years,
+            datasets: [{
+                label: 'Total',
+                data: totals,
+                backgroundColor: 'rgba(75, 192, 192, 0.2)', // Adjust color as needed
+                borderColor: 'rgba(75, 192, 192, 1)', // Adjust color as needed
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+</script>
+
+
+
+{% include 'graph_scripts/expe_scripts.html' %}
+{% endblock content %}
+{% block extrascripts %}
+    <script type="text/javascript" src="{% static 'js/plugins/jquery.dataTables.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/plugins/dataTables.bootstrap.min.js' %}"></script>
+    <script type="text/javascript">$('#sampleTable').DataTable();</script>
+{% endblock extrascripts %}

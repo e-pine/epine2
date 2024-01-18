@@ -1,0 +1,78 @@
+{% extends 'main.html' %}
+{% block title %}Crop{% endblock title %}
+{% block head %}
+<div class="">
+  <a class="btn btn-primary" data-toggle="modal" data-target="#createCropModal">Add</a>
+</div>
+{% endblock head %}
+{% block title-page %}List Items{% endblock title-page %}
+{% block boxes %}
+{% endblock boxes %}
+{% block row %}
+{% load custom_filters %}
+  {% if messages %}
+        <ul class="messages">
+               {% for message in messages %}
+                     <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+               {% endfor %}
+       </ul>
+  {% endif %}
+  <!-- <form method='POST' action=''>{% csrf_token %}
+            {{form_search}}
+                <input type="submit" value='Search'/>
+        </form> -->
+        <br>
+        <div class="card card-body">
+          <table class="table table-bordered table-hover">
+                <thead>
+                  <tr class="bg-success">
+                    <th>CATEGORY</th>
+                    <th>ITEM NAME</th>
+                    <th>QUANTITY STORED</th>
+                    <th>COST</th>
+                    <!-- <th>TIMESTAMP</th>
+                    <th>LAST UPDATED</th> -->
+                  </tr>
+                </thead>
+              {% for instance in queryset %}
+                  <tr>
+                    <td>{{instance.category}}</td>
+                    <td><a href="{% url 'update_items' instance.id %}">{{instance.item_name}}</a></td>
+                    <td>
+                      {% if instance.quantity <= instance.reorder_level %}
+                      <div style="background-color: orange;">
+                        <a href="{% url 'stock_detail' instance.id %}">{{instance.quantity}}</a></div>
+                      {% else %}
+                        <a href="{% url 'stock_detail' instance.id %}">{{instance.quantity}}</a>
+                      {% endif %}
+                    </td>
+                    <td>{{instance.cost}}</td>
+                    <!-- <td>{{instance.timestamp}}</td>
+                    <td>{{instance.last_updated}}</td> -->
+                  </tr>
+              {% endfor %}
+            </table>
+        </div>
+    
+
+<!-- Create Crop Modal -->
+<div class="modal fade" id="createCropModal" tabindex="-1" role="dialog" aria-labelledby="createCropModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="createCropModalLabel">Create Crop</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form method='POST' action=''>
+          {% csrf_token %}
+          {{form_create.as_p}}
+          <input type="submit" value='Save'/>
+      </form>
+      </div>
+    </div>
+  </div>
+  </div>
+{% endblock row %}

@@ -1,0 +1,84 @@
+{% extends 'core/base.html' %}
+{% load static %}
+{% block body %}
+<body id="page-top">
+    {% include 'core/nav.html' %}
+    <div class="masthead login-page">
+        <div class="card card-success p-1">
+            <div class="card-header">
+                <h3 class="card-title">BIDDING ROOMS FOR REJECTED</h3>
+              <div class="card-tools">
+                <a href="{% url 'buy-page' %}"><button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button></a>
+              </div>
+            </div>
+            <div class="card-body" style="height: 500px;">
+                <section class="content">
+                    <style>
+                        /* Add this CSS to add borders only to the sides and inside horizontal lines of the table */
+                        #sampleTable {
+                            border-collapse: collapse;
+                            border-left: 1px solid #ddd; /* Adjust the color as needed */
+                            border-right: 1px solid #ddd; /* Adjust the color as needed */
+                        }
+            
+                        #sampleTable th,
+                        #sampleTable td {
+                            border-top: 1px solid #ddd; /* Adjust the color as needed */
+                            border-bottom: 1px solid #ddd; /* Adjust the color as needed */
+                            border-left: none; /* Remove left border for cells */
+                            border-right: none; /* Remove right border for cells */
+                        }
+            
+                        #sampleTable th {
+                            background-color: #f2f2f2; /* Optional: Add background color to header row */
+                        }
+            
+                        .hidden-header {
+                            display: none;
+                        }
+            
+                        .scrollable-table-container {
+                            max-height: 400px; /* Set the desired height for the scrollable area */
+                            overflow-y: auto;
+                        }
+                    </style>
+                    <div class="col-md-12">
+                        <div class="scrollable-table-container">
+                            <div class="table-responsive">
+                                <table class="table table-hover table-bordered dataTable no-footer" id="sampleTable" role="grid" aria-describedby="sampleTable_info">
+                                    <thead class="hidden-header">
+                                        <tr role="row" class="bg-light">
+                                            <th class="sorting_asc" tabindex="0" aria-controls="sampleTable" rowspan="1" colspan="1"  style="width: 102.141px;"></th>
+                                            <th class="sorting_asc" tabindex="0" aria-controls="sampleTable" rowspan="1" colspan="1"  style="width: 102.141px;"></th>
+                                            <th class="sorting" tabindex="0" aria-controls="sampleTable" rowspan="1" colspan="1"  style="width: 102.141px;"></th>
+                                            <th class="sorting" tabindex="0" aria-controls="sampleTable" rowspan="1" colspan="1"  style="width: 102.141px;"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                      {% for room in room_rejected %}
+                                            <tr role="row" class="odd">
+                                              <td><a href="{% url 'roomrej' room.slug %}"><i class='far fa-comment-dots' style='font-size:35px; color: black;'></i></a></td>
+                                                <td class="sorting_1"><strong><a href="{% url 'roomrej' room.slug %}"><h5 style="color: black;">{{room.name}}</h5><a></strong></td>
+                                                <td><a href="{% url 'roomrej' room.slug %}"><p style="color: black;">{{room.date_added}}</p></a></td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+            
+            <!-- /.card-body -->
+          </div>
+          
+    </div>
+    
+    {% include 'core/buyer/buy_style.html' %}
+    {% block content %}
+    {% endblock content %}
+</body>
+{% endblock body %}

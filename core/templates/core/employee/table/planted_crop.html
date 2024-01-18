@@ -1,0 +1,92 @@
+<div class="card">
+    <a href="{% url 'crop_list' %}" class="card-success">
+      <div class="card-header">
+        <h3 class="card-title">Planted Crops</h3>
+  
+        <div class="card-tools">
+          <button type="button" class="btn btn-tool" data-card-widget="collapse">
+            <i class="fas fa-minus"></i>
+          </button>
+          <button type="button" class="btn btn-tool" data-card-widget="remove">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+      </div>
+    </a>
+    <div class="card-body">
+      <table class="table table-bordered table-hover">
+        <thead>
+            <tr class="bg-light">
+                <th>Year</th>
+                <th>Category</th>
+                <th>Number Planted</th>
+                <th>Plant Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for year, crops_by_year in crops_by_year.items %}
+                {% for crop in crops_by_year %}
+                    <tr class="data-row-crops">
+                        {% if forloop.first %}
+                            <td rowspan="{{ crops_by_year|length }}"><strong>{{ year }}</strong></td>
+                        {% endif %}
+                        <td>{{ crop.category }}</td>
+                        <td>{{ crop.number_planted }}</td>
+                        <td>{{ crop.plant_date }}</td>
+                        <!-- Delete Crop Modal -->
+                            <div class="modal fade" id="deleteCropModal" tabindex="-1" role="dialog" aria-labelledby="deleteCropModalLabel" aria-hidden="true">
+                                <div class="modal-dialog" role="document">
+                                <div class="modal-content bg-dark">
+                                    <div class="float-right p-2">
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                    </div>
+                                    <div class="text-center">
+                                    <h4>The all stored data on this crop will permanently deleted, are you sure you to continue?</h4>
+                                    </div>
+                                    <div class="text-right p-3">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                    <button type="button" class="btn btn-danger" id="confirmDelete">Continue</button>
+                                    </div>
+                                </div>
+                                </div>
+                            </div>
+                    </tr>
+                {% endfor %}
+            {% endfor %}
+        </tbody>
+    </table>
+      <div class="float-right p-2">
+        <a class="btn btn-outline-secondary" data-toggle="modal" data-target="#createCropModal">Add</a>
+        <button id="see-more-crops" class="btn btn-outline-primary">See More</button>
+      </div>
+    </div>
+    <!-- /.card-body -->
+  </div>
+
+  <!-- Create Crop Modal -->
+  <div class="modal fade" id="createCropModal" tabindex="-1" role="dialog" aria-labelledby="createCropModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header bg-secondary">
+          <!-- <h5 class="modal-title" id="createCropModalLabel">Create Crop</h5> -->
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form method="post">
+            {% csrf_token %}
+            <div class="card-body mb-1">
+              {{crop_form}}
+            </div>
+            <div class="col-12 mb-4">
+                <button type="submit" class="btn btn-secondary btn-block">Add</button>
+              </div>
+            <!-- /.card-body -->
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>

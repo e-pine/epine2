@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load custom_filters %}
+{% block css %}
+{% endblock css %}
+{% block content %}
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <!-- <h1 class="m-0">List of Event</h1> -->
+         </div>
+      </div><!-- /.container-fluid -->
+    </div>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-7">
+                <div class="card card-warning">
+                    <a href="{% url 'harvest_revenues' %}">
+                        <div class="card-header">
+                            <a href="{% url 'emp_farm_events' %}"><button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                              </button></a>
+                        </div>
+                    </a>
+                    <div class="card-body">
+                        <div class="row justify-content-center">
+                            <div class="col-sm-12">
+                                <div id="sampleTable_wrapper" class="dataTables_wrapper container-fluid dt-bootstrap4 no-footer">
+                                    <div class="row">
+                                        <div class="col-sm-12">
+                                            <h5 class="text-center"><strong>{{ notification.name }}<p style="font-style: italic;">( {{ notification.variety }} )</p></strong></h5>
+                                            <br><table class="table table-bordered table-hover">
+                                                <thead>
+                                                    <tr>
+                                                        <th style="width: 30.141px;">Day</th>
+                                                        <th style="width: 100.141px;">Description</th>
+                                                        <th style="width: 110.141px;">Date Added</th>
+                                                        <!-- <th style="width: 80.141px;">Action</th> -->
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {% for detail in notification.details.all %}
+                                                        <tr>
+                                                            <td>{{ forloop.counter }}</td>
+                                                            <td>{{ detail.description }}</td>
+                                                            <td>{{ detail.date_added }}</td>
+                                                            <!-- <td class=""><a href="{% url 'edit_emp_event' detail.broadcast_notification.id %}"><i class="fas fa-edit"></i></a></td> -->
+
+                                                            
+                                                        </tr>
+                                                    {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+  
+  </div>
+
+  <script>
+    function completeEvent(eventId) {
+      
+        var url = `/complete_event/${eventId}/`;
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+        })
+        .then(response => {
+            if (response.ok) {
+                location.reload();
+            } else {
+                console.error('Failed to mark event as completed');
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    }
+  </script>
+{% endblock content %}
+{% block extrascripts %}
+    <script type="text/javascript" src="{% static 'js/plugins/jquery.dataTables.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/plugins/dataTables.bootstrap.min.js' %}"></script>
+    <script type="text/javascript">$('#sampleTable').DataTable();</script>
+{% endblock extrascripts %}

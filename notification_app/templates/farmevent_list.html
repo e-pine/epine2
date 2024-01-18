@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h2>Farm Events</h2>
+  <ul>
+    {% for farmevent in object_list %}
+      <li>{{ farmevent.event }} - <a href="{% url 'farmevent_update' farmevent.pk %}">Edit</a> - <a href="{% url 'farmevent_delete' farmevent.pk %}">Remove</a></li>
+    {% endfor %}
+  </ul>
+  <a href="{% url 'farmevent_create' %}">Add Farm Event</a>
+
+  <h2>Farm Events</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Event</th>
+        <th>Cost</th>
+        <th>Date Added</th>
+        <th>Description</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for farmevent in object_list %}
+        <tr>
+          <td>{{ farmevent.event }}</td>
+          <td>{{ farmevent.details.cost }}</td>
+          <td>{{ farmevent.details.date_added }}</td>
+          <td>{{ farmevent.details.description }}</td>
+          <td>
+            <a href="{% url 'farmevent_update' farmevent.pk %}">Edit</a> -
+            <a href="{% url 'farmevent_delete' farmevent.pk %}">Remove</a>
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <a href="{% url 'farmevent_create' %}">Add Farm Event</a>
+{% endblock %}

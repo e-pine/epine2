@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load custom_filters %}
+{% block css %}
+{% endblock css %}
+{% block content %}
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <!-- <h1 class="m-0">List of Event</h1> -->
+         </div>
+      </div><!-- /.container-fluid -->
+    </div>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card card-warning">
+                    <a href="{% url 'harvest_revenues' %}">
+                        <div class="card-header">
+                            <div class="card-tools">
+                                <a href="{% url 'empl-page' %}"><button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                  <span aria-hidden="true">&times;</span>
+                                </button></a>
+                                <!-- <button type="button" class="btn btn-tool" data-card-widget="remove">
+                                  <i class="fas fa-times"></i>
+                                </button> -->
+                              </div>
+                        </div>
+                    </a>
+                    <div class="card-body">
+                        <div class="row justify-content-center">
+                            <div class="col-sm-12">
+                                <ul class="breadcrumb float-sm-right">
+                                    <li><a class="btn btn-success" data-toggle="modal" data-target="#createCropModal">Add</a></li><br><br>
+                                    <!-- Create Crop Modal -->
+                                    <div class="modal fade" id="createCropModal" tabindex="-1" role="dialog" aria-labelledby="createCropModalLabel" aria-hidden="true">
+                                      <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                          <div class="modal-header bg-success">
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                              <span aria-hidden="true">&times;</span>
+                                            </button>
+                                          </div>
+                                          <div class="modal-body">
+                                            <form method="post">
+                                              {% csrf_token %}
+                                              <div class="card-body">
+                                                {{ferpes_form}}
+                                              </div>
+                                              <button type="submit" class="btn btn-success btn-block">Submit</button>
+                                              <!-- /.card-body -->
+                                            </form>
+                                          </div>
+                                        </div>
+                                      </div>
+                                      </div>
+                                  </ul>
+                                  <div class="table-responsive">
+                                    <div id="sampleTable_wrapper" class="dataTables_wrapper container-fluid dt-bootstrap4 no-footer">
+                                        <div class="row">
+                                            <div class="col-sm-12">
+                                                <table class="table table-hover table-bordered">
+                                                    <thead>
+                                                        <tr role="row" class="bg-light">
+                                                            <th class="sorting_asc" tabindex="0" aria-controls="sampleTable" rowspan="1" colspan="1"  style="width: 102.141px;">Product Name</th>
+                                                            <th class="sorting" tabindex="0" aria-controls="sampleTable" rowspan="1" colspan="1"  style="width: 102.141px;">Price</th>
+                                                            <th class="sorting" tabindex="0" aria-controls="sampleTable" rowspan="1" colspan="1"  style="width: 50.141px;">Quantity Used</th>
+                                                            <th class="sorting" tabindex="0" aria-controls="sampleTable" rowspan="1" colspan="1"  style="width: 102.141px;">Date</th>
+                                                            <th class="sorting" tabindex="0" aria-controls="sampleTable" rowspan="1" colspan="1"  style="width: 80.141px;">Total</th>
+                                                            <th class="sorting" tabindex="0" aria-controls="sampleTable" rowspan="1" colspan="1"  style="width: 50.141px;">Action</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                      {% for expense in fer_pes_expenses %}
+                                                            <tr role="row" class="odd">
+                                                                <td class="sorting_1">{{ expense.product_name }}</td>
+                                                                <td>₱ {{ expense.price|format_number }}</td>
+                                                                <td>{{ expense.quantity_used|format_number }}</td>
+                                                                <td>{{ expense.date }}</td>
+                                                                <td>₱ {{ expense.total|format_number|default:"N/A" }}</td>
+                                                                <td class="text-center"><a href="{% url 'fer_expense_update_emp' expense.id %}"><i class="fas fa-edit"></i></a></td>
+                                                            </tr>
+                                                        {% endfor %}
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+  
+  </div>
+
+
+{% endblock content %}
+{% block extrascripts %}
+    <script type="text/javascript" src="{% static 'js/plugins/jquery.dataTables.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/plugins/dataTables.bootstrap.min.js' %}"></script>
+    <script type="text/javascript">$('#sampleTable').DataTable();</script>
+{% endblock extrascripts %}

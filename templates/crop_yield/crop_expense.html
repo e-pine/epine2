@@ -1,0 +1,512 @@
+{% extends 'base.html' %}
+{% block title %}Expenses{% endblock title %}
+{% block content %}
+{% load custom_filters %}
+{% if request.user.is_staff %}
+<div class="col-md-6">
+  <div class="card">
+    <div class="card-header">
+        <div class="card-tools">
+            <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                <i class="fas fa-minus"></i>
+            </button>
+            <button type="button" class="btn btn-tool" data-card-widget="remove">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="chart">
+            <canvas id="yearlyExpensesPieChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+            <div id="currentExpensesYearLabel">Year: </div>
+            <div id="plantingData"></div>
+            <div id="workData"></div>
+            <div id="pastAndFertData"></div>
+
+            <button onclick="nextYear1()">Next Year</button>
+        </div>
+
+        <!-- Add a table to display detailed information -->
+        <!-- Add a table to display detailed information -->
+
+
+    </div>
+    <!-- /.card-body -->
+  </div>
+</div>
+
+{% endif %}
+<div class="content-header">
+  <!-- Add a table to display detailed information -->
+<table class="table mt-3">
+  <thead>
+      <tr>
+          <th></th>
+          {% for entry in crop_yearly_totals %}
+              <th>{{ entry.year }}</th>
+          {% endfor %}
+      </tr>
+  </thead>
+  <tbody>
+      <tr class="bg-secondary" style="height: 10px;">
+        <td><strong>COST CATEGORY</strong></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+      </tr>
+      <tr>
+          <td>Planting Expense</td>
+          {% for entry in crop_yearly_totals %}
+              <td>{{ entry.total|floatformat|default:"N/A" }}</td>
+          {% endfor %}
+      </tr>
+      <tr>
+          <td>Workers Expense</td>
+          {% for entry in work_yearly_totals %}
+              <td>{{ entry.total|floatformat|default:"N/A" }}</td>
+          {% endfor %}
+      </tr>
+      <tr>
+          <td>Fertilizer/Pesticide Expense</td>
+          {% for entry in ferpes_yearly_totals %}
+              <td>{{ entry.total|floatformat|default:"N/A" }}</td>
+          {% endfor %}
+      </tr>
+  </tbody>
+</table>
+
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm-6">
+          <a href="{% url 'crop' %}" class="nav-link"></a>
+        </div><!-- /.col -->
+        <div class="col-sm-6">
+          <ul class="breadcrumb float-sm-right">
+            <li><a class="btn btn-primary" data-toggle="modal" data-target="#startingModal">Expense When Starting &nbsp;&nbsp;<i class="fas fa-plus"></i></a></li>&nbsp;
+            <!-- Create Works Modal -->
+            <div class="modal fade" id="startingModal" tabindex="-1" role="dialog" aria-labelledby="startingModalLabel" aria-hidden="true">
+              <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                  <div class="modal-header bg-primary">
+                    <!-- <h5 class="modal-title" id="createCropModalLabel">Create Crop</h5> -->
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                  <div class="modal-body">
+                    <form method="post">
+                      {% csrf_token %}
+                      <div class="card-body mb-1">
+                        {{start_form}}
+                      </div>
+                      <button type="submit" class="btn btn-primary btn-block float-right">Add</button>
+                      <!-- /.card-body -->
+                    </form>
+                  </div>
+                </div>
+              </div>
+              </div>
+            <li><a class="btn btn-warning" data-toggle="modal" data-target="#createCropModal">Works &nbsp;&nbsp;<i class="fas fa-plus"></i></a></li>&nbsp;
+            <!-- Create Works Modal -->
+            <div class="modal fade" id="createCropModal" tabindex="-1" role="dialog" aria-labelledby="createCropModalLabel" aria-hidden="true">
+              <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                  <div class="modal-header bg-warning">
+                    <!-- <h5 class="modal-title" id="createCropModalLabel">Create Crop</h5> -->
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                  <div class="modal-body">
+                    <form method="post">
+                      {% csrf_token %}
+                      <div class="card-body mb-1">
+                        {{work_form}}
+                      </div>
+                      <button type="submit" class="btn btn-warning btn-block float-right">Add</button>
+                      <!-- /.card-body -->
+                    </form>
+                  </div>
+                </div>
+              </div>
+              </div>
+              <li><a class="btn btn-secondary" data-toggle="modal" data-target="#fertilizerModal">Fertilizer and Pesticide &nbsp;&nbsp; <i class="fas fa-plus"></i></a></li>
+              <!-- Create Fertilizer and Pesticide Modal -->
+              <div class="modal fade" id="fertilizerModal" tabindex="-1" role="dialog" aria-labelledby="fertilizerModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                  <div class="modal-content">
+                    <div class="modal-header bg-secondary">
+                      <!-- <h5 class="modal-title" id="createCropModalLabel">Create Crop</h5> -->
+                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                      </button>
+                    </div>
+                    <div class="modal-body">
+                      <form method="post">
+                        {% csrf_token %}
+                        <div class="card-body mb-1">
+                          {{ferpes_form}}
+                        </div>
+                        <button type="submit" class="btn btn-secondary btn-block float-right">Add</button>
+                        <!-- /.card-body -->
+                      </form>
+                    </div>
+                  </div>
+                </div>
+                </div>
+          </ul>
+        </div><!-- /.col -->
+      </div><!-- /.row -->
+    </div><!-- /.container-fluid -->
+  </div>
+<section class="content">
+    <div class="container-fluid">
+        <div class="row"> 
+            <h4>Expense When Starting</h4>
+            <table class="table table-bordered table-hover">
+                <thead>
+                    <tr class="bg-secondary">
+                        <th>Year</th>
+                        <th>Category</th>
+                        <th>Price Per Piece</th>
+                        <th>Purchase Suckers</th>
+                        <th>Date</th>
+                        <th>Total Expense</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for year, expenses in start_expenses_by_year.items %}
+                        {% for expense in expenses %}
+                            <tr>
+                                {% if forloop.first %}
+                                    <td rowspan="{{ expenses|length }}"><strong>{{ year }}</strong></td>
+                                {% endif %}
+                                <td>{{ expense.category }}</td>
+                                <td>Php. {{ expense.price|format_number }}</td>
+                                <td>{{ expense.total_number|format_number }} pcs</td>
+                                <td>{{ expense.date }}</td>
+                                <td>Php. {{ expense.total|format_number|default:"N/A" }}</td>
+                            </tr>
+                        {% endfor %}
+                        <tr class="bg-light">
+                            <td colspan="5" style="text-align: right; font-weight: bold;">Total:</td>
+                            <td>Php. {{ grand_total_ferpes_expenses|default:"N/A" }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <h4>Planting Expense</h4>
+            <table class="table table-bordered table-hover">
+                <thead>
+                    <tr class="bg-secondary">
+                        <th>Year</th>
+                        <th>Category</th>
+                        <th>Number Planted</th>
+                        <th>Plant Date</th>
+                        <th>Expense</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for year, crops_by_year in crops_by_year.items %}
+                        {% for crop in crops_by_year %}
+                            <tr>
+                                {% if forloop.first %}
+                                    <td rowspan="{{ crops_by_year|length }}"><strong><strong>{{ year }}</strong></strong></td>
+                                {% endif %}
+                                <td>{{ crop.category }}</td>
+                                <td>{{ crop.number_planted|format_number }} pcs</td>
+                                <td>{{ crop.plant_date }}</td>
+                                <td>Php. {{ crop.calculate_total|format_number|default:"N/A" }}</td>
+                            </tr>
+                        {% endfor %}
+                        <tr class="bg-light">
+                            <td colspan="4" style="text-align: right; font-weight: bold;">Yearly Total:</td>
+                            <td>Php. 
+                                {% for entry in crop_yearly_totals %}
+                                    {% if entry.year == year %}
+                                        {{ entry.total|format_number|default:"N/A" }}
+                                    {% endif %}
+                                {% endfor %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    <!-- Display the Grand Total row -->
+                    <tr class="bg-secondary">
+                        <td colspan="4" style="text-align: right; font-weight: bold;">Grand Total:</td>
+                        <td>{{ grand_total|default:"N/A" }}</td>
+                    </tr>
+                </tbody>
+            </table>
+            <h4>Workers Expense</h4>
+            <table class="table table-bordered table-hover">
+                <thead>
+                    <tr class="bg-secondary">
+                        <th>Year</th>
+                        <th>Name</th>
+                        <th>Price Pay</th>
+                        <th>Workers</th>
+                        <th>Day</th>
+                        <th>Date</th>
+                        <th>Total</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for year, expenses in worker_expenses_by_year.items %}
+                        {% for expense in expenses %}
+                            <tr>
+                                {% if forloop.first %}
+                                    <td rowspan="{{ expenses|length }}"><strong>{{ year }}</strong></td>
+                                {% endif %}
+                                <td><a href="{% url 'work_expense_update' expense.id %}">{{ expense.name }}</a></td>
+                                <td>Php. {{ expense.price_pay|format_number }}</td>
+                                <td>{{ expense.workers }}</td>
+                                <td>{{ expense.days }}</td>
+                                <td>{{ expense.date }}</td>
+                                <td>Php. {{ expense.total|format_number|default:"N/A" }}</td>
+                                <td>
+                                    <button class="btn delete-work-expense" data-toggle="modal" data-target="#workExpenseModal" data-work-id="{{ expense.id }}"><i class="fa fa-trash" style="color: red;"></i></button>
+                                </td>
+                                <!-- Delete work Modal -->
+                                <div class="modal fade" id="workExpenseModal" tabindex="-1" role="dialog" aria-labelledby="workExpenseModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog" role="document">
+                                    <div class="modal-content bg-dark">
+                                        <div class="float-right p-2">
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                        </div>
+                                        <div class="text-center">
+                                        <h4>The all stored data on this crop will permanently deleted, are you sure you to continue?</h4>
+                                        </div>
+                                        <div class="text-right p-3">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                        <button type="button" class="btn btn-danger" id="confirmDeleteWork">Continue</button>
+                                        </div>
+                                    </div>
+                                    </div>
+                                  </div>
+                            </tr>
+                        {% endfor %}
+                        <tr class="bg-light">
+                            <td colspan="6" style="text-align: right; font-weight: bold;">Yearly Total:</td>
+                            <td>Php. 
+                                {% for entry in work_yearly_totals %}
+                                    {% if entry.year == year %}
+                                        {{ entry.total|format_number|default:"N/A" }}
+                                    {% endif %}
+                                {% endfor %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    <tr class="bg-light">
+                        <td colspan="6" style="text-align: right; font-weight: bold;">Grand Total:</td>
+                        <td style="font-weight: bold;">Php {{ grand_total_worker_expenses|format_number|default:"N/A" }}</td>
+                    </tr>
+                </tbody>
+            </table>
+            <h4>Fertilizer and Pesticide Expense</h4>
+            <table class="table table-bordered table-hover">
+                <thead>
+                    <tr class="bg-secondary">
+                        <th>Year</th>
+                        <th>Product Name</th>
+                        <th>Price</th>
+                        <th>Quantity Used</th>
+                        <th>Date</th>
+                        <th>Total</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for year, expenses in fer_pes_expenses_by_year.items %}
+                        {% for expense in expenses %}
+                            <tr>
+                                {% if forloop.first %}
+                                    <td rowspan="{{ expenses|length }}"><strong>{{ year }}</strong></td>
+                                {% endif %}
+                                <td><a href="{% url 'fer_expense_update' expense.id %}">{{ expense.product_name }}</a></td>
+                                <td>Php. {{ expense.price|format_number }}</td>
+                                <td>{{ expense.quantity_used|format_number }}</td>
+                                <td>{{ expense.date }}</td>
+                                <td>Php. {{ expense.total|format_number|default:"N/A" }}</td>
+                                <th><button class="btn delete-fer-expense" data-toggle="modal" data-target="#ferExpenseModal" data-fer-id="{{ expense.id }}"><i class="fa fa-trash" style="color: red;"></i></button></th>
+                                <!-- Delete fer_pes Modal -->
+                                <div class="modal fade" id="ferExpenseModal" tabindex="-1" role="dialog" aria-labelledby="ferExpenseModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog" role="document">
+                                    <div class="modal-content bg-dark">
+                                        <div class="float-right p-2">
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                        </div>
+                                        <div class="text-center">
+                                        <h4>The all stored data on this crop will permanently deleted, are you sure you to continue?</h4>
+                                        </div>
+                                        <div class="text-right p-3">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                        <button type="button" class="btn btn-danger" id="confirmDeleteFer">Continue</button>
+                                        </div>
+                                    </div>
+                                    </div>
+                                  </div>
+                            </tr>
+                        {% endfor %}
+                        <tr class="bg-light">
+                            <td colspan="5" style="text-align: right; font-weight: bold;">Yearly Total:</td>
+                            <td>Php. 
+                                {% for entry in ferpes_yearly_totals %}
+                                    {% if entry.year == year %}
+                                        {{ entry.total|format_number|default:"N/A" }}
+                                    {% endif %}
+                                {% endfor %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    <tr class="">
+                        <td colspan="5" style="text-align: right; font-weight: bold;">Grand Total:</td>
+                        <td style="font-weight: bold;">Php. {{ grand_total_ferpes_expenses|format_number|default:"N/A" }}</td>
+                    </tr>
+                </tbody>
+            </table>
+            <h4>Yearly Total Expenses</h4>
+            <table class="table table-bordered table-hover">
+                <thead>
+                    <tr class="bg-secondary">
+                        <th>Year</th>
+                        <th>Total Expenses</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for entry in total_expense_yearly %}
+                        <tr>
+                            <td>{{ entry.year }}</td>
+                            <td>Php. {{ entry.total|format_number|default:"N/A" }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+</section>
+
+{% include 'graph_scripts/expe_scripts.html' %}
+<script>
+  var workerExpenseData = [
+      {% for entry in work_yearly_totals %}
+          {% if entry.year == year %}
+              {{ entry.total|floatformat:2 }},
+          {% endif %}
+      {% endfor %}
+  ];
+
+  var workerExpenseLabels = [
+      {% for entry in work_yearly_totals %}
+          {% if entry.year == year %}
+              '{{ entry.year }}',
+          {% endif %}
+      {% endfor %}
+  ];
+
+  var workerExpensePieChartCanvas = document.getElementById('workerExpensePieChart').getContext('2d');
+
+  var workerExpensePieChartData = {
+      labels: workerExpenseLabels,
+      datasets: [{
+          data: workerExpenseData,
+          backgroundColor: [
+              'rgba(255, 99, 132, 0.6)',
+              'rgba(54, 162, 235, 0.6)',
+              'rgba(255, 206, 86, 0.6)',
+              'rgba(75, 192, 192, 0.6)',
+              'rgba(153, 102, 255, 0.6)',
+              'rgba(255, 159, 64, 0.6)',
+              // Add more colors as needed
+          ]
+      }]
+  };
+
+  var workerExpensePieChart = new Chart(workerExpensePieChartCanvas, {
+      type: 'pie',
+      data: workerExpensePieChartData,
+      options: {
+          responsive: true,
+          plugins: {
+              tooltip: {
+                  callbacks: {
+                      label: function(context) {
+                          return context.label + ': ' + context.parsed.toFixed(2); // Display two decimal points
+                      }
+                  }
+              }
+          }
+      }
+  });
+</script>
+<!-- ----------------------work delete---------------------------------------- -->
+<script>
+    $(document).ready(function () {
+      // Handle delete button click
+      $(".delete-work-expense").click(function () {
+        var cropId = $(this).data("work-id");
+        
+        // When the "Delete" button in the modal is clicked
+        $("#confirmDeleteWork").click(function () {
+          $.ajax({
+            url: "{% url 'work_expense_delete' 0 %}".replace("0", cropId), // Use your URL pattern for crop_delete
+            method: "POST",
+            data: {
+              csrfmiddlewaretoken: "{{ csrf_token }}",
+              // Add any other data you need to send here
+            },
+            success: function (response) {
+              // Handle the success response if needed
+              // For example, you can remove the deleted row from the table
+              $("#workExpenseModal").modal("hide"); // Close the modal
+              // Reload or update the table as needed
+              // You can use AJAX to update the table without a full page reload
+              location.reload(); // Reload the page to reflect changes
+            },
+            error: function (error) {
+              console.error("Error deleting crop:", error);
+            },
+          });
+        });
+      });
+    });
+</script>
+<!-- ---------------------FER PES------------------------------ -->
+<script>
+    $(document).ready(function () {
+      // Handle delete button click
+      $(".delete-fer-expense").click(function () {
+        var cropId = $(this).data("fer-id");
+        
+        // When the "Delete" button in the modal is clicked
+        $("#confirmDeleteFer").click(function () {
+          $.ajax({
+            url: "{% url 'fer_expense_delete' 0 %}".replace("0", cropId), // Use your URL pattern for crop_delete
+            method: "POST",
+            data: {
+              csrfmiddlewaretoken: "{{ csrf_token }}",
+              // Add any other data you need to send here
+            },
+            success: function (response) {
+              // Handle the success response if needed
+              // For example, you can remove the deleted row from the table
+              $("#ferExpenseModal").modal("hide"); // Close the modal
+              // Reload or update the table as needed
+              // You can use AJAX to update the table without a full page reload
+              location.reload(); // Reload the page to reflect changes
+            },
+            error: function (error) {
+              console.error("Error deleting crop:", error);
+            },
+          });
+        });
+      });
+    });
+</script>
+{% endblock %}

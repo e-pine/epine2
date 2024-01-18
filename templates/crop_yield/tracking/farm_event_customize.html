@@ -1,0 +1,135 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Farm Activities{% endblock title %}
+{% block content %}
+{% load custom_filters %}
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="row"> 
+            <div class="container">
+                <div class="row mt-5">
+                    <div class="col-md-6 offset-md-3">
+                        <div class="border bg-white p-0">
+                            <div style="float: right;" class="p-2"> <!-- Use "text-end" class to align the content to the right -->
+                                <div class="btn btn-success" data-toggle="modal" data-target="#scheduleNotify">Add</div>
+                                <!-- modal -->
+                                <div class="modal fade" id="scheduleNotify" tabindex="-1" role="dialog" aria-labelledby="scheduleNotifyLabel" aria-hidden="true">
+                                    <div class="modal-dialog" role="document">
+                                      <div class="modal-content">
+                                        <div class="modal-body">
+                                          <div class="float-right">
+                                            <a href="{% url 'customize_farm_event' %}">
+                                              <button type="button" class="close" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                              </button>
+                                            </a>
+                                          </div>
+                                          <form method="post">
+                                            {% csrf_token %}
+                                            <div class="form-group">
+                                                <label for="">Title:</label>
+                                                {{ customize_event_form.event }}
+                                            </div>
+                                            <div class="float-right">
+                                                <button type="submit" class="btn btn-primary">Submit</button>
+                                              </div>
+                                          </form>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                <div class="btn btn-secondary">Back</div>
+                            </div>
+                            <br><br>
+                            <table class="table">
+                                <!-- <thead>
+                                    <tr role="row" class="bg-warning">
+                                        <th class="sorting_asc" tabindex="0" aria-controls="sampleTable" rowspan="1" colspan="1" style="width: 102.141px;">Event</th>
+                                        <th class="sorting_asc" tabindex="0" aria-controls="sampleTable" rowspan="1" colspan="1" style="width: 102.141px;"></th>
+                                    </tr>
+                                </thead> -->
+                                <tbody>
+                                    {% for events in customize_event %}
+                                        <tr role="row" class="{% cycle 'odd' 'even' %}">
+                                            <td>{{ forloop.counter }}.</td>
+                                            <td>{{ events.event }}</td>
+                                            <td class="text-center">
+                                                <a class="btn btn-outline-primary" href="{% url 'customize_farm_event_update' events.id %}">edit</a>
+                                                <a class="btn btn-outline-danger" href="{% url 'customize_farm_event_delete' events.id %}">delete</a>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                            
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<script>
+  function completeEvent(eventId) {
+      // Assuming you have an endpoint to mark an event as completed
+      var url = `/complete_event/${eventId}/`;
+      fetch(url, {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json',
+              'X-CSRFToken': '{{ csrf_token }}'
+          },
+      })
+      .then(response => {
+          if (response.ok) {
+              // Reload the page or update the UI as needed
+              location.reload();
+          } else {
+              console.error('Failed to mark event as completed');
+          }
+      })
+      .catch(error => console.error('Error:', error));
+  }
+</script>
+<script>
+  $(document).ready(function () {
+    // Handle delete button click
+    $(".delete-crop").click(function () {
+      var cropId = $(this).data("crop-id");
+      
+      // When the "Delete" button in the modal is clicked
+      $("#confirmDelete").click(function () {
+        $.ajax({
+          url: "{% url 'bidder_win_list_delete' 0 %}".replace("0", cropId), // Use your URL pattern for crop_delete
+          method: "POST",
+          data: {
+            csrfmiddlewaretoken: "{{ csrf_token }}",
+            // Add any other data you need to send here
+          },
+          success: function (response) {
+            // Handle the success response if needed
+            // For example, you can remove the deleted row from the table
+            $("#deleteCropModal").modal("hide"); // Close the modal
+            // Reload or update the table as needed
+            // You can use AJAX to update the table without a full page reload
+            location.reload(); // Reload the page to reflect changes
+          },
+          error: function (error) {
+            console.error("Error deleting crop:", error);
+          },
+        });
+      });
+    });
+  });
+</script>
+
+{% endblock content %}
+
+{% block extrascripts %}
+    <script type="text/javascript" src="{% static 'js/plugins/jquery.dataTables.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/plugins/dataTables.bootstrap.min.js' %}"></script>
+    <script type="text/javascript">$('#sampleTable').DataTable();</script>
+{% endblock extrascripts %}
+

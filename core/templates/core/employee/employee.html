@@ -1,0 +1,275 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load custom_filters %}
+{% block css %}
+{% endblock css %}
+{% block content %}
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <!-- <h1 class="m-0">List of Event</h1> -->
+         </div>
+      </div><!-- /.container-fluid -->
+    </div>
+    <br><br><br><br>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-5">
+                <div class="card">
+                    <a href="{% url 'harvest_revenues' %}" class="card-warning">
+                        <div class="card-header">
+                            <!-- <h3 class="card-title">Revenues</h3>
+                            <div class="card-tools">
+                                <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                                    <i class="fas fa-minus"></i>
+                                </button>
+                                <button type="button" class="btn btn-tool" data-card-widget="remove">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div> -->
+                        </div>
+                    </a>
+                    <div class="card-body">
+                        <a href="{% url 'emp_farm_events' %}" class="btn btn-success btn-block">Farm Events</a>
+                        <a href="{% url 'emp_farm_planting' %}" class="btn btn-success btn-block">Planting</a>
+                        <a href="{% url 'emp_farm_labor' %}" class="btn btn-success btn-block">Labors</a>
+                        <a href="{% url 'emp_farm_fer_pes' %}" class="btn btn-success btn-block">Fertilizer and Pesticide</a>
+                        <!-- <div class="row justify-content-center">
+                            <div class="col-sm-12">
+                                <table class="table table-hover dataTable no-footer" id="sampleTable" role="grid" aria-describedby="sampleTable_info">
+                                    <thead>
+                                        <tr role="row" class="bg-light">
+                                            <th style="width: 80.141px;">No.</th>
+                                            <th style="width: 102.141px;">Event</th>
+                                          
+                                            <th style="width: 102.141px;">Action</th>
+                                            <th style="width: 102.141px;">Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for events in event %}
+                                        <tr role="row" class="{% cycle 'odd' 'even' %}">
+                                            <td>{{ forloop.counter }}</td>
+                                            <td>{{ events.name }}</td>
+                                         
+                                            <td class=""><a href="{% url 'farm_event_update' events.id %}">Add Details</i></a></td>
+                                            <td>
+                                                {% if not events.sent %}
+                                                    <button class="btn btn-primary" onclick="completeEvent('{{ events.id }}')">Complete</button>
+                                                {% else %}
+                                                    {{ events.status }}
+                                                {% endif %}
+                                            </td>                                
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                                
+                            </div>
+                        </div> -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+  
+  </div>
+<script>
+    $(document).ready(function () {
+        // Initialize DataTables
+        $('#sampleTable').DataTable();
+    });
+
+    // Function to update the table display based on the selected number of rows
+    function updateTableDisplay() {
+        var selectElement = document.getElementById("showRows");
+        var selectedValue = selectElement.options[selectElement.selectedIndex].value;
+
+        // Show only the selected number of rows
+        var tableRows = document.getElementById("sampleTable").getElementsByTagName("tr");
+
+        for (var i = 1; i < tableRows.length; i++) {
+            if (i <= selectedValue) {
+                tableRows[i].style.display = "";
+            } else {
+                tableRows[i].style.display = "none";
+            }
+        }
+    }
+</script>
+  <script>
+    function completeEvent(eventId) {
+      
+        var url = `/complete_event/${eventId}/`;
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+        })
+        .then(response => {
+            if (response.ok) {
+                location.reload();
+            } else {
+                console.error('Failed to mark event as completed');
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    }
+  </script>
+   
+   
+<script>
+  // Add JavaScript to periodically update the notification badge
+  function updateNotificationBadge() {
+      // Make an AJAX request to get the notification count
+      $.get('/get_notification_count/', function(data) {
+          $('#notification-badge').text(data.count);
+      });
+  }
+
+  // Call the function initially and set a timer to periodically update the badge
+  updateNotificationBadge();
+  setInterval(updateNotificationBadge, 60000); // Update every minute
+</script>
+
+<!-- planted -->
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+      const dataRowsCrops = document.querySelectorAll(".data-row-crops");
+      const seeMoreButtonCrops = document.getElementById("see-more-crops");
+  
+      let visibleCountCrops = 2;
+      let showMoreCrops = false;
+  
+      const toggleVisibilityCrops = () => {
+          dataRowsCrops.forEach((row, index) => {
+              if (showMoreCrops || index < visibleCountCrops) {
+                  row.style.display = "table-row";
+              } else {
+                  row.style.display = "none";
+              }
+          });
+      };
+  
+      seeMoreButtonCrops.addEventListener("click", () => {
+          showMoreCrops = !showMoreCrops;
+          toggleVisibilityCrops();
+          if (showMoreCrops) {
+              seeMoreButtonCrops.textContent = "Show Less";
+          } else {
+              seeMoreButtonCrops.textContent = "See More";
+          }
+      });
+  
+      toggleVisibilityCrops();
+  });
+  </script>
+
+<!-- harvest -->
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+      const dataRowsHarvest = document.querySelectorAll(".data-row-harvest");
+      const seeMoreButtonHarvest = document.getElementById("see-more-harvest");
+  
+      let visibleCountHarvest = 2;
+      let showMoreHarvest = false;
+  
+      const toggleVisibilityHarvest = () => {
+          dataRowsHarvest.forEach((row, index) => {
+              if (showMoreHarvest || index < visibleCountHarvest) {
+                  row.style.display = "table-row";
+              } else {
+                  row.style.display = "none";
+              }
+          });
+      };
+  
+      seeMoreButtonHarvest.addEventListener("click", () => {
+          showMoreHarvest = !showMoreHarvest;
+          toggleVisibilityHarvest();
+          if (showMoreHarvest) {
+              seeMoreButtonHarvest.textContent = "Show Less";
+          } else {
+              seeMoreButtonHarvest.textContent = "See More";
+          }
+      });
+  
+      toggleVisibilityHarvest();
+  });
+</script>
+
+<!-- works pay -->
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+      const dataRowsHarvest = document.querySelectorAll(".data-row-work-expense");
+      const seeMoreButtonHarvest = document.getElementById("see-more-work-expense");
+  
+      let visibleCountHarvest = 2;
+      let showMoreHarvest = false;
+  
+      const toggleVisibilityHarvest = () => {
+          dataRowsHarvest.forEach((row, index) => {
+              if (showMoreHarvest || index < visibleCountHarvest) {
+                  row.style.display = "table-row";
+              } else {
+                  row.style.display = "none";
+              }
+          });
+      };
+  
+      seeMoreButtonHarvest.addEventListener("click", () => {
+          showMoreHarvest = !showMoreHarvest;
+          toggleVisibilityHarvest();
+          if (showMoreHarvest) {
+              seeMoreButtonHarvest.textContent = "Show Less";
+          } else {
+              seeMoreButtonHarvest.textContent = "See More";
+          }
+      });
+  
+      toggleVisibilityHarvest();
+  });
+</script>
+
+<!-- stock -->
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+      const dataRowsHarvest = document.querySelectorAll(".data-row-stock");
+      const seeMoreButtonHarvest = document.getElementById("see-more-stock");
+  
+      let visibleCountHarvest = 2;
+      let showMoreHarvest = false;
+  
+      const toggleVisibilityHarvest = () => {
+          dataRowsHarvest.forEach((row, index) => {
+              if (showMoreHarvest || index < visibleCountHarvest) {
+                  row.style.display = "table-row";
+              } else {
+                  row.style.display = "none";
+              }
+          });
+      };
+  
+      seeMoreButtonHarvest.addEventListener("click", () => {
+          showMoreHarvest = !showMoreHarvest;
+          toggleVisibilityHarvest();
+          if (showMoreHarvest) {
+              seeMoreButtonHarvest.textContent = "Show Less";
+          } else {
+              seeMoreButtonHarvest.textContent = "See More";
+          }
+      });
+  
+      toggleVisibilityHarvest();
+  });
+</script>
+<script>
+  // Automatically close messages after 5 seconds
+  $('.messages-container .alert').delay(5000).slideUp(500);
+</script>
+
+{% endblock content %}

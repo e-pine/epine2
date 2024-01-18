@@ -1,0 +1,157 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Harvested Crop{% endblock title %}
+{% block content %}
+{% load custom_filters %}
+<div class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm-6">
+          <h3>Harvested Crop</h3>
+       </div>
+       <div class="col-sm-6">
+          <ol class="breadcrumb float-sm-right">
+            <li class="breadcrumb-item active">High Quality</li>
+            <li class="breadcrumb-item"><a href="{% url 'har_poor_quality' %}">Low Quality</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'hav_rejected' %}">Rejected</a></li>
+          </ol>
+        </div>
+    </div><!-- /.container-fluid -->
+    </div>
+    {% include 'crop_yield/harvest/harv_con_head.html' %}
+</div>
+<div class="col-md-12">
+  <div class="tile">
+      <div class="tile-body">
+          <div class="table-responsive">
+              <div id="sampleTable_wrapper" class="dataTables_wrapper container-fluid dt-bootstrap4 no-footer">
+                  <div class="row">
+                      <div class="col-sm-12">
+                          <table class="table table-hover table-bordered dataTable no-footer" id="sampleTable" role="grid" aria-describedby="sampleTable_info">
+                              <thead>
+                                  <tr role="row" class="bg-success">
+                                      <th class="sorting_asc" tabindex="0" aria-controls="sampleTable" rowspan="1" colspan="1"  style="width: 102.141px;">Variety</th>
+                                      <th class="sorting" tabindex="0" aria-controls="sampleTable" rowspan="1" colspan="1"  style="width: 102.141px;">Total Number</th>
+                                      <th class="sorting" tabindex="0" aria-controls="sampleTable" rowspan="1" colspan="1"  style="width: 102.141px;">Date</th>
+                                  </tr>
+                              </thead>
+                              <tbody>
+                                {% for year, bids_by_year in harvested_good_by_year.items %}
+                                 {% for bid_win in bids_by_year %}
+                                      <tr role="row" class="odd">
+                                          <td class="sorting_1">{{ bid_win.category }}</td>
+                                          <td>
+                                            {% if bid_win.total_buy_pine %}
+                                                <a class="text-dark" href="{% url 'bidding_update' bid_win.id %}">{{ bid_win.total_buy_pine|format_number }} pcs.</a>
+                                            {% else %}
+                                                <a href="{% url 'bidding_update' bid_win.id %}">Click here</a>
+                                            {% endif %}
+                                              </td>
+                                          <td>{{ bid_win.date }}</td>
+                                      </tr>
+                                      {% endfor %}
+                                  {% endfor %}
+                              </tbody>
+                          </table>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </div>
+</div>
+
+
+<script>
+    function updateHarvestChart() {
+        $.ajax({
+            url: '{% url "get_harvest_chart_data" %}',
+            method: 'GET',
+            dataType: 'json',
+            success: function(data) {
+                // barChart.data.labels = data.years;
+                // barChart.data.datasets[0].data = data.harvested_rejected_data;
+                // barChart.data.datasets[1].data = data.harvested_bad_data;
+                barChart.data.datasets[0].data = data.harvested_good_data;
+                barChart.update();
+            },
+            error: function(error) {
+                console.log('Error fetching data:', error);
+            }
+        });
+    }
+
+    var barChartCanvas = $('#harvestbarChart').get(0).getContext('2d');
+
+    var barChartData = {
+        labels: [
+            {% for year, totals in totals_by_year.items %}
+                '{{ year }}',
+            {% endfor %}
+        ],
+        datasets: [
+            // {
+            //     label: 'Rejected Pineapples',
+            //     backgroundColor: 'rgba(255, 0, 0, 0.7)',
+            //     borderColor: 'rgba(255, 0, 0, 0.7)',
+            //     data: [
+            //         {% for year, totals in totals_by_year.items %}
+            //             {{ totals.harvested_rejected_total }},
+            //         {% endfor %}
+            //     ]
+            // },
+            // {
+            //     label: 'Bad Quality',
+            //     backgroundColor: 'rgba(210, 214, 222, 1)',
+            //     borderColor: 'rgba(210, 214, 222, 1)',
+            //     data: [
+            //         {% for year, totals in totals_by_year.items %}
+            //             {{ totals.harvested_bad_total }},
+            //         {% endfor %}
+            //     ],
+            // },
+            {
+                label: 'High Quality',
+                backgroundColor: 'rgba(40, 167, 69, 0.7)',
+                borderColor: 'rgba(40, 167, 69, 0.7)',
+                data: [
+                    {% for year, totals in totals_by_year.items %}
+                        {{ totals.harvested_good_total }},
+                    {% endfor %}
+                ]
+            },
+        ]
+    };
+
+    var barChart = new Chart(barChartCanvas, {
+        type: 'bar',
+        data: barChartData,
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            },
+            plugins: {
+                legend: {
+                    display: true,
+                    position: 'top'
+                },
+                title: {
+                    display: true,
+                    text: 'Yearly Totals'
+                }
+            }
+        }
+    });
+
+    setInterval(updateHarvestChart, 2000);
+</script>
+{% endblock content %}
+{% block extrascripts %}
+    <script type="text/javascript" src="{% static 'js/plugins/jquery.dataTables.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/plugins/dataTables.bootstrap.min.js' %}"></script>
+    <script type="text/javascript">$('#sampleTable').DataTable();</script>
+{% endblock extrascripts %}

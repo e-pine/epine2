@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% block title %}Crop{% endblock title %}
+{% block content %}
+
+
+<div class="container">
+  <div class="row mt-5">
+    <div class="col-md-6 offset-md-3">
+      <div class="border bg-white p-3">
+        <div class="">
+          <a class="btn btn-primary" style="float: right;" data-toggle="modal" data-target="#createCropModal">Add</a>
+        </div>
+        <br>
+        <br>
+        <table class="table table-bordered table-hover">
+          <thead>
+          <tr class="bg-light">
+            <th>Variety</th>
+            <th>Remove</th>
+          </tr>
+          </thead>
+          <tbody>
+          {% for cat in category %}
+          <tr>
+            <td>{{cat.name}}</td>
+            <td>
+              <a class="btn btn-block btn-sm" href="{% url 'cat_delete' cat.id %}"><i class="far fa-trash-alt"></i></a>
+              <!-- <button class="btn btn-block btn-danger btn-sm" data-toggle="modal" data-target="#deleteModal{{crop.id}}">Delete</button> -->
+            </td>
+          </tr>
+          {% endfor %}
+          </tbody>
+          <tfoot>
+          </tfoot>
+      </table>
+      </div>
+    </div>
+  </div>
+</div>
+  <!-- Create Crop Modal -->
+  <div class="modal fade" id="createCropModal" tabindex="-1" role="dialog" aria-labelledby="createCropModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <!-- <h5 class="modal-title" id="createCropModalLabel">Category</h5> -->
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form method="post">
+          {% csrf_token %}
+          <div class="card-body mb-1">
+            {{cat_form}}
+          </div>
+          <button type="submit" class="btn btn-primary float-right">Submit</button>
+          <!-- /.card-body -->
+        </form>
+      </div>
+    </div>
+  </div>
+  </div>
+{% endblock content %}

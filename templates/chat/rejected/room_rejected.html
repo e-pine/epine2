@@ -1,0 +1,379 @@
+{% load static %}
+{% load custom_filters %}
+<!DOCTYPE html>
+{% if request.user.is_staff %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+{% include 'style.html' %}
+{% block css %}{% endblock css %}
+</head>
+<body class="hold-transition sidebar-mini layout-fixed">
+<div class="wrapper">
+
+  <!-- Preloader -->
+  <div class="preloader flex-column justify-content-center align-items-center bg-dark">
+    <!-- <img class="animation__shake" src="{% static 'dist/img/AdminLTELogo.png' %}" alt="AdminLTELogo" height="60" width="60"> -->
+  </div>
+  
+  {% include 'navbar.html' %}
+
+  <!-- Main Sidebar Container -->
+  {% if request.user.is_staff %}
+  {% include 'sidebar.html' %}
+  {% endif %}
+
+  <!-- Content Wrapper. Contains page content -->
+  {% if request.user.is_staff %}
+  <div class="content-wrapper">
+    <div class="content-header">
+  {% endif %}
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-sm-6">
+            <h1 class="m-0"></h1>
+          </div><!-- /.col -->
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class=""><a href="#">&nbsp;</a></li>
+              <li class=""> </li>
+            </ol>
+          </div><!-- /.col -->
+        </div><!-- /.row -->
+      </div><!-- /.container-fluid -->
+    </div>
+  {% block content %}  
+  
+  <div class="card card-success p-3">
+    <div class="card-header">
+      <!-- <h3 class="card-title">Planted Crop</h3> -->
+      <div class="card-tools">
+        <a href="{% url 'bidding_rejected' %}"><button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button></a>
+
+      </div>
+    </div>
+    <div class="card-body" style="width: auto;">
+          <div class="chat-messages space-y-3" id="chat-messages">
+              {% for message in messages %}
+              <div class="message-container {% if message.user.username == request.user.username %}sender{% else %}receiver{% endif %}">
+                  {% if message.user != request.user %} 
+                  <p class="font-weight-bold">{{ message.user.username }}</p>
+                  {% else %}
+                  <i class='far fa-user'></i>
+                  {% endif %}
+                  &nbsp;&nbsp;
+                  <div class="message-content rounded p-3 mb-3">
+                      <p>{{ message.content }}</p>
+                      <p class="message-time">{{ message.date_added|hours_ago }}</p>
+                  </div>
+              </div>
+              {% endfor %}
+          <style>
+            .message-container.default-message {
+                justify-content: center;
+                align-items: center;
+            }
+        </style>
+         </div>
+        <div class="card-footer">
+          <form action="." method="post" class="d-flex">
+            {% csrf_token %}
+            <input type="text" name="content" class="form-control flex-grow-1 mr-2" id="chat-message-input" style="background-color: rgb(219, 206, 206);">
+            <div class="button btn btn-primary px-4" id="chat-message-submit">Send</div>
+          </form>
+        </div>
+     
+    </div>
+    <!-- /.card-body -->
+  </div>
+  {{ room.slug|json_script:"json-roomname" }}
+  {{ request.user.username|json_script:"json-username" }}
+  
+  {% include 'script.html' %}
+  {% include 'chat/rejected/script_reject.html' %}  
+  </div>
+  
+  <style>
+  .sender .message-content {
+      background-color: #DCF8C6; /* Sender's background color */
+      color: #000;
+  }
+  
+  .receiver .message-content {
+      background-color: #ECE5DD; /* Receiver's background color */
+      color: #000;
+  }
+  
+  .message-container {
+      display: flex;
+      min-height: max-content;
+      justify-content: {% if message.user.username == request.user.username %}flex-end{% else %}flex-start{% endif %};
+  }
+  
+  .sender {
+      flex-direction: row-reverse;
+  }
+  
+  .receiver {
+      flex-direction: row;
+  }
+  
+  .message-content {
+      background-color: {% if message.user.username == request.user.username %}#DCF8C6{% else %}#ECE5DD{% endif %};
+      color: #000;
+      border-radius: 8px;
+      padding: 10px;
+      max-width: 70%; /* Adjust this as needed */
+      box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.1); /* Add a shadow for a card-like effect */
+  }
+  
+  .message-content p.font-weight-bold {
+      margin: 0;
+  }
+  
+  .message-time {
+      font-size: 12px;
+      margin-top: 5px;
+      color: #888;
+  }
+  
+  </style>
+  {% endblock content %}
+  </div>
+  <!-- /.content-wrapper -->
+{% include 'footer.html' %}
+
+  <!-- Control Sidebar -->
+  <aside class="control-sidebar control-sidebar-dark">
+    <!-- Control sidebar content goes here -->
+  </aside>
+  <!-- /.control-sidebar -->
+</div>
+<!-- ./wrapper -->
+
+{% block script %}{% endblock script %}
+</body>
+</html>
+{% else %}
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+        <title>{% block title %}EPine{% endblock title %}</title>
+        <!-- Favicon-->
+        <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
+        <!-- Bootstrap Icons-->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet" />
+        <!-- Google fonts-->
+        <link href="https://fonts.googleapis.com/css?family=Merriweather+Sans:400,700" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css?family=Merriweather:400,300,300italic,400italic,700,700italic" rel="stylesheet" type="text/css" />
+        <!-- SimpleLightbox plugin CSS-->
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/SimpleLightbox/2.1.0/simpleLightbox.min.css" rel="stylesheet" />
+        <!-- Core theme CSS (includes Bootstrap)-->
+        <link href="{% static 'css/styles.css' %}" rel="stylesheet" />
+        {% include 'style.html' %}
+        <style>
+            /* Custom styles if needed */
+            .chat-messages {
+                max-height: 400px;
+                overflow-y: auto;
+            }
+            .fullscreen .chat-messages {
+                max-height: 800px;
+            }
+        
+            .message-sender {
+                text-align: right;
+                background-color: #DCF8C6; /* Light green for sender messages */
+                color: #000; /* Black text for sender messages */
+            }
+        
+            .message-receiver {
+                text-align: left;
+                background-color: #ECE5DD; /* Light gray for receiver messages */
+                color: #000; /* Black text for receiver messages */
+            }
+        </style>
+    </head>
+    <style>
+        header.masthead {
+        padding-top: 10rem;
+        padding-bottom: calc(10rem - 4.5rem);
+        background: linear-gradient(to bottom, rgba(46, 39, 34, 0.8) 0%, rgba(24, 21, 19, 0.8)  100%), url("{% static 'dist/img/ba.jpeg' %}");
+        background-position: center;
+        background-repeat: no-repeat;
+        background-attachment: scroll;
+        background-size: cover;
+        }
+    </style>
+    <body id="page-top">
+      <style>
+        .card-header {
+          height: 45px; /* Adjust the height as needed */
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        }
+        .card-tools {
+          order: 1; /* Move the card-tools (buttons) to the left */
+        }
+      </style>
+<!-- <nav class="navbar navbar-expand-lg navbar-light fixed-top py-3" id="mainNav">
+  <div class="container px-4 px-lg-5">
+      <a href="{% url 'index' %}" class="brand-link">
+          <img src="{% static 'dist/img/default-monochrome.svg' %}" alt="AdminLTE Logo" style="opacity: .8; width: 100px; height: 30px;">
+        </a>
+      <button class="navbar-toggler navbar-toggler-right" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+      <div class="collapse navbar-collapse" id="navbarResponsive">
+          <ul class="navbar-nav ms-auto my-2 my-lg-0">
+              <li class="nav-item dropdown">
+                  <a class="nav-link" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Message
+                  </a>
+                  <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                    {% for room in rooms %}
+                    <a href="{% url 'room' room.slug %}" class="dropdown-item">{{room.name}}</a>
+                    {% endfor %}
+                  </div>
+                </li>
+              
+          </ul>
+      </div>
+  </div>
+</nav> -->
+<div class="masthead login-page">
+  <div class="card card-success p-1" id="chatCard">
+    <div class="card-header">
+      <a href="{% url 'bidding_rooms_rej' %}" class="back-link"><i class="fas fa-arrow-left" style="color: #000;"></i></a>
+
+      <div class="card-tools">
+        <button type="button" class="btn" id="toggleFullScreen"><i class="fas fa-expand-arrows-alt"></i></button>
+      </div>
+
+    </div>
+    <div class="card-body" style=" overflow-y: auto;">
+          <div class="chat-messages space-y-3" id="chat-messages">
+              {% for message in messages %}
+              <div class="message-container {% if message.user.username == request.user.username %}sender{% else %}receiver{% endif %}">
+                  {% if message.user != request.user %} 
+                  <p class="font-weight-bold">{{ message.user.username }}</p>
+                  {% else %}
+                  <i class='far fa-user'></i>
+                  {% endif %}
+                  &nbsp;&nbsp;
+                  <div class="message-content rounded p-3 mb-3">
+                      <p>{{ message.content }}</p>
+                      <p class="message-time">{{ message.date_added|hours_ago }}</p>
+                  </div>
+              </div>
+              {% endfor %}
+          <style>
+            .message-container.default-message {
+                justify-content: center;
+                align-items: center;
+            }
+        </style>
+         </div>
+        <div class="card-footer">
+          <form action="." method="post" class="d-flex">
+            {% csrf_token %}
+            <input type="text" name="content" class="form-control flex-grow-1 mr-2" id="chat-message-input" style="background-color: rgb(219, 206, 206);">
+            <div class="button btn btn-primary px-4" id="chat-message-submit">Send</div>
+          </form>
+        </div>
+     
+    </div>
+    <!-- /.card-body -->
+  </div>
+</div>
+
+{{ room.slug|json_script:"json-roomname" }}
+{{ request.user.username|json_script:"json-username" }}
+
+{% include 'script.html' %}
+{% include 'chat/rejected/script_reject.html' %}
+</div>
+
+<style>
+.sender .message-content {
+    background-color: #DCF8C6; /* Sender's background color */
+    color: #000;
+}
+
+.receiver .message-content {
+    background-color: #ECE5DD; /* Receiver's background color */
+    color: #000;
+}
+
+.message-container {
+    display: flex;
+    min-height: max-content;
+    justify-content: {% if message.user.username == request.user.username %}flex-end{% else %}flex-start{% endif %};
+}
+
+.sender {
+    flex-direction: row-reverse;
+}
+
+.receiver {
+    flex-direction: row;
+}
+
+.message-content {
+    background-color: {% if message.user.username == request.user.username %}#DCF8C6{% else %}#ECE5DD{% endif %};
+    color: #000;
+    border-radius: 8px;
+    padding: 10px;
+    max-width: 70%; /* Adjust this as needed */
+    box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.1); /* Add a shadow for a card-like effect */
+}
+
+.message-content p.font-weight-bold {
+    margin: 0;
+}
+
+.message-time {
+    font-size: 12px;
+    margin-top: 5px;
+    color: #888;
+}
+
+</style>
+<style>
+  .fullscreen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1000;
+  }
+</style>
+<script src="{% static 'js/togglescreen.js' %}"></script>
+
+        <!-- Footer-->
+        <!-- <footer class="bg-light py-5">
+            <div class="container px-4 px-lg-5"><div class="small text-center text-muted">Alrights Reserved &copy; 2023 - ePine</div></div>
+        </footer> -->
+        <!-- Bootstrap core JS-->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+        <!-- SimpleLightbox plugin JS-->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/SimpleLightbox/2.1.0/simpleLightbox.min.js"></script>
+        <!-- Core theme JS-->
+        <script src="{% static 'js/scripts.js' %}"></script>
+        <!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *-->
+        <!-- * *                               SB Forms JS                               * *-->
+        <!-- * * Activate your form at https://startbootstrap.com/solution/contact-forms * *-->
+        <!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *-->
+        <!-- <script src="https://cdn.startbootstrap.com/sb-forms-latest.js"></script> -->
+    </body>
+</html>
+{% endif %}
+

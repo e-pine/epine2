@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h2>Broadcast Notifications</h2>
+  <ul>
+    {% for notification in object_list %}
+      <li>{{ notification.name.event }} - {{ notification.status }} - <a href="{% url 'broadcastnotification_update' notification.pk %}">Edit</a></li>
+    {% endfor %}
+  </ul>
+  <!-- Add other content as needed -->
+{% endblock %}

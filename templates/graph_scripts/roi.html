@@ -1,0 +1,97 @@
+<script>
+    var currentYearIndex = 0;
+
+    var profit = [
+        {% for entry in total_expense_yearly %}
+            {{ entry.total }},
+        {% endfor %}
+    ];
+    var invested = [
+        {% for year, value in overall.items %}
+            {{ value }},
+        {% endfor %}
+    ];
+
+    var initialRoiPieChartData = getYearlyRoiPieChartData(0);
+
+    var yearlyRoiPieChartCanvas = document.getElementById('yearlyRoiPieChart').getContext('2d');
+    var yearlyRoiPieChart = new Chart(yearlyRoiPieChartCanvas, {
+        type: 'pie',
+        data: initialRoiPieChartData,
+        options: {
+            responsive: true,
+            plugins: {
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return context.label + ': ' + context.parsed.toFixed(0) + '%'; // Add '%' to tooltip labels
+                        }
+                    }
+                }
+            },
+            legend: {
+                position: 'right', // Move legend to the right side
+            },
+            layout: {
+                padding: {
+                    top: 30, // Adjust the top padding to position the "Year" label
+                }
+            }
+        }
+    });
+
+
+    function getYearlyRoiPieChartData(yearIndex) {
+        var overall = (invested[yearIndex] / (invested[yearIndex] + profit[yearIndex])) * 100;
+        var totalExpensePercentage = 100 - overall;
+
+        var yearlyRoiPieChartData = {
+            labels: ['Profit', 'Invested'],
+            datasets: [
+                {
+                    data: [overall, totalExpensePercentage],
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.6)',
+                        'rgba(54, 162, 235, 0.6)',
+                    ],
+                    borderColor: [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(54, 162, 235, 1)',
+                    ],
+                    borderWidth: 1
+                }
+            ]
+        };
+
+        return yearlyRoiPieChartData;
+    }
+
+    function updateRoiYearlyDataTable(yearIndex) {
+        var tableBody = document.getElementById('yearlyDataBody');
+        tableBody.innerHTML = '';
+
+        var categories = ['Returned(₱)', 'Invested(₱)', 'Profit(₱)', 'ROI(%)'];
+        var amounts = [grandTotals[yearIndex], profit[yearIndex], invested[yearIndex], roiValues[yearIndex]];
+
+        for (var i = 0; i < categories.length; i++) {
+            var newRow = tableBody.insertRow();
+            var cell1 = newRow.insertCell(0);
+            var cell2 = newRow.insertCell(1);
+
+            cell1.textContent = categories[i];
+            cell2.textContent = amounts[i].toLocaleString();
+        }
+    }
+
+    function nextYear() {
+        currentYearIndex = (currentYearIndex + 1) % roiYears.length;
+
+        var newRoiPieChartData = getYearlyRoiPieChartData(currentYearIndex);
+        yearlyRoiPieChart.data = newRoiPieChartData;
+        yearlyRoiPieChart.update();
+
+        document.getElementById('currentYearLabel').innerText = 'Year: ' + roiYears[currentYearIndex];
+
+        updateRoiYearlyDataTable(currentYearIndex);
+    }
+</script>

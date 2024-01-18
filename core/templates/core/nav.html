@@ -1,0 +1,80 @@
+{% load static %}
+<nav class="navbar navbar-expand-lg navbar-light text-uppercase fixed-top py-3" id="mainNav">
+    <div class="container px-4 px-lg-5">
+        <a href="{% url 'index' %}" class="brand-link">
+            <img src="{% static 'dist/img/default-monochrome.svg' %}" alt="AdminLTE Logo" style="opacity: .8; width: 100px; height: 30px;">
+          </a>
+        <button class="navbar-toggler navbar-toggler-right" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+        <div class="collapse navbar-collapse" id="navbarResponsive">
+            <ul class="navbar-nav ms-auto my-2 my-lg-0">
+                <li class="nav-item"><a class="nav-link" href="#about">About</a></li>
+                <li class="nav-item"><a class="nav-link" href="#services">Services</a></li>
+                <!-- <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Bidding Rooms
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <a class="dropdown-item" href="{% url 'bidding_rooms' %}">Set A</a>
+                        <a class="dropdown-item" href="{% url 'bidding_rooms_low' %}">Set B</a>
+                        <a class="dropdown-item" href="{% url 'bidding_rooms_rej' %}">Rejected</a>
+                    </div>
+                </li> -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                      Message
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
+                        <div class="dropdown-divider"></div>
+                        <div class="dropdown-divider"></div>
+                        {% for item in chat_messages %}
+                        <div class="dropdown-item">
+                          <!-- Message Start -->
+                          <div class="media">
+                            <!-- <img src="{% static 'dist/img/default-monochrome.svg' %}" alt="User Avatar" class="img-size-50 mr-3 img-circle"> -->
+                            <div class="media-body">
+                              <h3 class="dropdown-item-title">
+                                
+                                    <a href="{% url 'chat' username=item.sender %}" class="dropdown-item">
+                                        <i class="fas fa-envelope mr-2"></i>
+                                        {{ item.sender }} <br>
+                                        <small>{{ item.latest_message }} &nbsp;{{ item.date }}</small>
+                                    </a>
+                  
+                              </h3>
+                            </div>
+                          </div>
+                          <!-- Message End -->
+                        </div>
+                        <div class="dropdown-divider"></div>
+                        {% endfor %}
+                    </div>
+                  </li>
+                <!-- <li class="nav-item"><a class="nav-link" href="#contact">Contact</a></li> -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="fas fa-user"></i>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
+                        <div class="dropdown-divider"></div>
+                        <div class="dropdown-header" style="font-size: large;">{{request.user}}</div>
+                        <div class="dropdown-divider"></div>
+                        <div class="dropdown-item">
+                          <!-- Message Start -->
+                          <div class="media">
+                            <!-- <img src="{% static 'dist/img/default-monochrome.svg' %}" alt="User Avatar" class="img-size-50 mr-3 img-circle"> -->
+                            <div class="media-body">
+                              <h5 class="dropdown-item-title">
+                                <a class="dropdown-item" href="{% url 'logout' %}"><i class="fas fa-sign-out-alt"></i>&nbsp;Logout</a>
+                                </a>
+                              </h5>
+                            </div>
+                          </div>
+                          <!-- Message End -->
+                        </div>
+                        <div class="dropdown-divider"></div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>

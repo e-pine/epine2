@@ -1,0 +1,113 @@
+{% extends 'home.html' %}
+{% block title %}
+Login
+{% endblock title %}
+{% block content %}
+<div class="masthead loginPage">
+  <div class="loginBox">
+    <!-- /.login-logo -->
+    <!-- {% if messages %}
+            <div class="messages-container">
+              <ul class="messages">
+                {% for message in messages %}
+                  <div class="alert alert-outline-primary alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                {% endfor %}
+              </ul>
+            </div>
+    {% endif %} -->
+    <div class="card card-success">
+      <div class="card-header text-center">
+        <div class="float-right">
+          <a href="{% url 'home' %}">
+            <button type="button" class="close" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </a>
+        </div>
+        <a href="#" class="h2">Login</a>
+      </div>
+      <div class="card-body">
+        <!-- <p class="login-box-msg">Sign in to start your session</p> -->
+  
+        <form action="" method="post">
+          {% csrf_token %}
+          {% if messages %}
+          <div class="text-primary" style="font-style: italic; font-size: medium;">
+                <ul class="messages text-center">
+                    {% for message in messages %}
+                        <!-- <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li> -->
+                        <strong>{{ message }}</strong>
+                    {% endfor %}
+                </ul>
+          </div>
+          {% endif %}
+          <div class="col-12 input-group mb-3">
+            <input type="text" class="form-control" placeholder="Username" name="username">
+            <div class="input-group-append">
+              <!-- <div class="input-group-text bg-light">
+                <span class="fas fa-user"></span>
+              </div> -->
+            </div>
+          </div>
+          <div class="col-12 input-group mb-3">
+            <input type="password" class="form-control" placeholder="Password" name="password">
+            <div class="input-group-append">
+              <!-- <div class="input-group-text bg-light">
+                <span class="fas fa-lock"></span>
+              </div> -->
+            </div>
+          </div>
+          <p class="col-12 mb-3">
+            <a href="{% url 'password_reset' %}">Forgot Password?</a>
+          </p>
+          <div class="col-12 mb-3">
+            <button type="submit" class="btn btn-success btn-block btn-oval" style="border-radius: 20px 20px 20px 20px;">Continue</button>
+          </div>
+          
+          
+            <!-- <div class="col-12 mb-6" style="text-align: center;">
+              <div class="icheck-primary">
+                <p style="font-size: large;">Don't have an account?<a href="{% url 'register' %}" style="color: rgb(29, 230, 29);">Signup now</a></p>
+              </div>
+            </div> -->
+            <p class="mb-1" style="text-align: center;">Don't have an account?<a href="{% url 'register' %}" style="color: rgb(29, 230, 29);">Sign up</a></p>
+            <!-- <div class="col-12" style="text-align: center;">
+              <div class="icheck-primary">
+                <p class="mb-0" style="font-size: large;">Forgot password?<a href="{% url 'password_reset' %}" style="color: rgb(29, 230, 29);">Password Reset</a></p>
+              </div>
+            </div> -->
+            <!-- <p class="mb-1" style="font-size: large; text-align: center;">Forgot password?<a href="{% url 'password_reset' %}" style="color: rgb(29, 230, 29);">Password Reset</a></p> -->
+        </form>
+  
+        <!-- <div class="social-auth-links text-center mt-2 mb-3">
+          <a href="#" class="btn btn-block btn-primary">
+            <i class="fab fa-facebook mr-2"></i> Sign in using Facebook
+          </a>
+          <a href="#" class="btn btn-block btn-danger">
+            <i class="fab fa-google-plus mr-2"></i> Sign in using Google+
+          </a>
+        </div> -->
+        <!-- /.social-auth-links -->
+  
+        <!-- <p class="mb-1">
+          <a href="forgot-password.html">I forgot my password</a>
+        </p> -->
+        <!-- <p class="mb-0">
+          <a href="{% url 'register' %}" class="text-center">Register a new membership</a>
+        </p> -->
+      </div>
+      <!-- /.card-body -->
+    </div>
+    <!-- /.card -->
+  </div>
+</div>
+<script>
+  // Automatically close messages after 5 seconds
+  $('.messages-container .alert').delay(10000).slideUp(500);
+</script>
+{% endblock content %}

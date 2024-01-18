@@ -1,0 +1,97 @@
+{% load static %}
+<!-- FONT AWESOM -->
+<!-- <link href="{% static 'fontawesomefree/css/fontawesome.css' %}" rel="stylesheet" type="text/css">
+<link href="{% static 'fontawesomefree/css/brands.css' %}" rel="stylesheet" type="text/css">
+<link href="{% static 'fontawesomefree/css/solid.css' %}" rel="stylesheet" type="text/css"> -->
+<!-- Google Font: Source Sans Pro -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+<!-- Font Awesome -->
+<link rel="stylesheet" href="{% static 'plugins/fontawesome-free/css/all.min.css' %}">
+<!-- Ionicons -->
+<link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+<!-- Tempusdominus Bootstrap 4 -->
+<link rel="stylesheet" href="{% static 'plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css' %}">
+<!-- iCheck -->
+<link rel="stylesheet" href="{% static 'plugins/icheck-bootstrap/icheck-bootstrap.min.css' %}">
+<!-- JQVMap -->
+<link rel="stylesheet" href="{% static 'plugins/jqvmap/jqvmap.min.css' %}">
+<!-- Theme style -->
+<link rel="stylesheet" href="{% static 'dist/css/adminlte.min.css' %}">
+<!-- overlayScrollbars -->
+<link rel="stylesheet" href="{% static 'plugins/overlayScrollbars/css/OverlayScrollbars.min.css' %}">
+<!-- Daterange picker -->
+<link rel="stylesheet" href="{% static 'plugins/daterangepicker/daterangepicker.css' %}">
+<!-- summernote -->
+<link rel="stylesheet" href="{% static 'plugins/summernote/summernote-bs4.min.css' %}">
+<!-- DataTables  & Plugins -->
+<link rel="stylesheet" href="{% static 'plugins/datatables-bs4/css/dataTables.bootstrap4.min.css' %}">
+<link rel="stylesheet" href="{% static 'plugins/datatables-responsive/css/responsive.bootstrap4.min.css' %}">
+<link rel="stylesheet" href="{% static 'plugins/datatables-buttons/css/buttons.bootstrap4.min.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'path/to/css/for/checkboxes.css' %}">
+<!-- calendar -->
+<link rel="stylesheet" href="{% static 'plugins/fullcalendar/main.css' %}">
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+    .chat-messages {
+        height: 600px;
+        overflow-y: auto;
+    
+/*  */
+}
+    .background {
+    position: relative;
+  }
+
+  .success{
+	list-style: none;
+	background-color: #f0f0f0;
+	color: green;
+	/* box-shadow: 12px 12px 12px #e61c66; */
+	text-align: center;
+}
+  
+  .masthead {
+        content: "";
+        padding-top: 10rem;
+        padding-bottom: calc(10rem - 4.5rem);
+        background: linear-gradient(rgba(46, 39, 34, 0.8) 0%, rgba(24, 21, 19, 0.8) 100%), url("{% static 'dist/img/ba.jpeg' %}");
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: cover;
+        }
+        .background::before {
+        content: "";
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background-image: url("{% static 'dist/img/ba.jpeg' %}");
+        background-size: cover;
+        opacity: 0.17;
+      }
+
+       .loginPage,
+        .registerPage {
+        -ms-flex-align: center;
+        align-items: center;
+        background-color: #e9ecef;
+        display: -ms-flexbox;
+        display: flex;
+        -ms-flex-direction: column;
+        flex-direction: column;
+        height: 100vh;
+        -ms-flex-pack: center;
+        justify-content: center;
+        }
+
+        .loginBox,
+        .register-box {
+        width: 400px;
+        }
+
+        .table-scroll {
+         max-height: 500px;
+         overflow-y: auto;
+        }
+</style>

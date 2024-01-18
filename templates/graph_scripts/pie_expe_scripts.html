@@ -1,0 +1,136 @@
+<script>
+    var crop_yearly_totals = [
+        {% for entry in crop_yearly_totals %}
+            {
+                year: '{{ entry.year }}',
+                total: {{ entry.total|floatformat|default:"N/A" }},
+            },
+        {% endfor %}
+    ];
+    var work_yearly_totals = [
+    {% for entry in work_yearly_totals %}
+        {
+            year: '{{ entry.year }}',
+            total: {{ entry.total|floatformat|default:"N/A" }},
+        },
+    {% endfor %}
+    ];
+
+    var ferpes_yearly_totals = [
+        {% for entry in ferpes_yearly_totals %}
+            {
+                year: '{{ entry.year }}',
+                total: {{ entry.total|floatformat|default:"N/A" }},
+            },
+        {% endfor %}
+    ];
+    var currentYearExpensesIndex = 0;
+    var yearlyExpensesPieChart;
+    var plantingData = [
+        {% for entry in crop_yearly_totals %}
+            {{ entry.total|floatformat|default:"N/A" }},
+        {% endfor %}
+    ];
+
+    var workData = [
+        {% for entry in work_yearly_totals %}
+            {{ entry.total|floatformat|default:"N/A" }},
+        {% endfor %}
+    ];
+
+    var pastAndFertData = [
+        {% for entry in ferpes_yearly_totals %}
+            {{ entry.total|floatformat|default:"N/A" }},
+        {% endfor %}
+    ];
+
+    document.addEventListener('DOMContentLoaded', function() {
+        var yearlyExpensesPieChartCanvas = document.getElementById('yearlyExpensesPieChart');
+        if (!yearlyExpensesPieChartCanvas) {
+            console.error("Canvas element 'yearlyExpensesPieChart' not found.");
+        } else {
+            var yearlyExpensesPieChartContext = yearlyExpensesPieChartCanvas.getContext('2d');
+            if (!yearlyExpensesPieChartContext) {
+                console.error("Could not get context for 'yearlyExpensesPieChart'.");
+            } else {
+                // Initialize the chart with the combined data
+                yearlyExpensesPieChart = new Chart(yearlyExpensesPieChartContext, {
+                    type: 'pie',
+                    data: getYearlyExpensesPieChartData(0),
+                    options: {
+                        responsive: true,
+                        aspectRatio: 1,
+                        plugins: {
+                            tooltip: {
+                                callbacks: {
+                                    label: function (context) {
+                                        return context.label + ': ' + context.parsed.toFixed(0) + '%';
+                                    }
+                                }
+                            }
+                        },
+                        title: {
+                            display: true,
+                            text: 'Year: ' + (crop_yearly_totals[0] ? crop_yearly_totals[0].year : 'N/A'),
+                            position: 'top' // Display title on top
+                        }
+                    }
+                });
+
+                // Display the initial year data
+                updateYearlyData(0);
+            }
+        }
+    });
+
+    function getYearlyExpensesPieChartData(yearIndex) {
+        var plantingTotal = plantingData[yearIndex] || 0;
+        var workTotal = workData[yearIndex] || 0;
+        var pastAndFertTotal = pastAndFertData[yearIndex] || 0;
+
+        var overall = (plantingTotal + workTotal) / (plantingTotal + workTotal + pastAndFertTotal) * 100;
+
+        var yearlyExpensesPieChartData = {
+            labels: ['Planting', 'Labors', 'Pesticide and Fertilizer'],
+            datasets: [
+                {
+                    data: [plantingTotal, workTotal, pastAndFertTotal],
+                    backgroundColor: [
+                        'rgba(3, 163, 19, 0.45)',
+                        'rgba(54, 162, 235, 0.6)',
+                        'rgba(75, 192, 192, 0.6)',
+                    ],
+                    borderColor: [
+                        'rgba(3, 163, 19, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(75, 192, 192, 0.45)',
+                    ],
+                    borderWidth: 1
+                }
+            ]
+        };
+
+        return yearlyExpensesPieChartData;
+    }
+
+    // Function to update yearly data
+    function updateYearlyData(yearIndex) {
+        // Display the year in the title
+        if (yearlyExpensesPieChart) {
+            yearlyExpensesPieChart.options.title.text = 'Year: ' + (crop_yearly_totals[yearIndex] ? crop_yearly_totals[yearIndex].year : 'N/A');
+            yearlyExpensesPieChart.update();
+        }
+    }
+
+    // Add a Next button function
+    function nextYear1() {
+        currentYearExpensesIndex = (currentYearExpensesIndex + 1) % plantingData.length;
+
+        var newExpensesPieChartData = getYearlyExpensesPieChartData(currentYearExpensesIndex);
+        yearlyExpensesPieChart.data = newExpensesPieChartData;
+        yearlyExpensesPieChart.update();
+
+        // Update the yearly data display
+        updateYearlyData(currentYearExpensesIndex);
+    }
+</script>

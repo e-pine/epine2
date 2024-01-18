@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% block title %}Crop{% endblock title %}
+{% block content %}
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+{% load custom_filters %}
+<div class="card card-body">
+  {% if messages %}
+        <ul class="messages">
+               {% for message in messages %}
+                     <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+               {% endfor %}
+       </ul>
+  {% endif %}
+  <div class="header">{{header}}</div>
+  <table class='table'>
+    <tr class="bg-success">
+      <th>ITEM NAME</th>
+      <th>QUANTITY IN STORED</th>
+      <th>LAST UPDATED</th>
+      <th>REORDER LEVEL</th>
+      <th></th>
+    </tr>
+    <tr>
+      <td>{{queryset.item_name}}</td>
+      <td>{{queryset.quantity}}</td>
+      <td>{{queryset.last_updated}}</td>
+      <td>{{queryset.reorder_level}}</td>
+      <th>
+        <a href="{% url 'issue_items' queryset.id %}"><div class='btn btn-warning'>ISSUED ITEM</div></a>
+        <a href="{% url 'receive_items' queryset.id %}"><div class='btn btn-primary'>ADD ITEM</div></a>
+      </th>
+    </tr>
+  </table>
+</div>
+</div>
+</div>
+</section>
+
+{% endblock content %}

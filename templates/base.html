@@ -1,0 +1,93 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}e-Pine{% endblock title %}</title>
+{% include 'style.html' %}
+{% block css %}{% endblock css %}
+{% block extracss %}
+{% endblock extracss %}
+</head>
+<body class="hold-transition sidebar-mini layout-fixed">
+<div class="wrapper">
+
+  <!-- Preloader -->
+  <div class="preloader flex-column justify-content-center align-items-center bg-dark">
+    <!-- <img class="animation__shake" src="{% static 'dist/img/AdminLTELogo.png' %}" alt="AdminLTELogo" height="60" width="60"> -->
+  </div>
+  
+  {% include 'navbar.html' %}
+
+  <!-- Main Sidebar Container -->
+  {% if request.user.is_staff %}
+  {% include 'sidebar.html' %}
+  {% endif %}
+
+  <!-- Content Wrapper. Contains page content -->
+  {% if request.user.is_staff %}
+  <div class="content-wrapper">
+    <div class="content-header">
+  {% endif %}
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-sm-6">
+            <h1 class="m-0"></h1>
+          </div><!-- /.col -->
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class=""><a href="#">&nbsp;</a></li>
+              <li class=""> </li>
+            </ol>
+          </div><!-- /.col -->
+        </div><!-- /.row -->
+      </div><!-- /.container-fluid -->
+    </div>
+  {% block content %}
+  
+  {% endblock content %}
+  </div>
+  <!-- /.content-wrapper -->
+{% include 'footer.html' %}
+
+  <!-- Control Sidebar -->
+  <aside class="control-sidebar control-sidebar-dark">
+    <!-- Control sidebar content goes here -->
+  </aside>
+  <!-- /.control-sidebar -->
+</div>
+<!-- ./wrapper -->
+{{ room_name|json_script:"room-name" }}
+    <script>
+        const roomName = JSON.parse(document.getElementById('room-name').textContent);
+
+        const notificationSocket = new WebSocket(
+            'ws://'
+            + window.location.host
+            + '/ws/notification/'
+            + roomName
+            + '/'
+        );
+
+        notificationSocket.onmessage = function(e) {
+            const data = JSON.parse(e.data);
+            // document.querySelector('#chat-log').value += (data.message + '\n');
+            console.log(data);
+            document.getElementById("notifications-dropdown").innerHTML = "<li class='dropdown-item'>" + data + "</li><hr class='dropdown-divider'>" + document.getElementById("notifications-dropdown").innerHTML;
+            // update notification badge form 0-99
+            document.getElementById("notification-badge").innerHTML = parseInt(document.getElementById("notification-badge").innerHTML) + 1;
+        };
+
+        notificationSocket.onclose = function(e) {
+            console.error('Chat socket closed unexpectedly');
+        };
+    </script>
+{% include 'script.html' %}
+{% block script %}{% endblock script %}
+{% block javascript %}
+{% endblock javascript %}
+{% block extrascripts %}
+{% endblock extrascripts %}
+</body>
+</html>

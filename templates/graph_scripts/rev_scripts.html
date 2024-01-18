@@ -1,0 +1,47 @@
+<script>
+    var barChartCanvas = $('#revenuesbarChart').get(0).getContext('2d');
+  
+    var barChartData = {
+        labels: [
+            {% for year, totals in totals_by_year.items %}
+                '{{ year }}',
+            {% endfor %}
+        ],
+        datasets: [
+            {
+                label: 'Revenues',
+                backgroundColor: 'rgba(10, 191, 197, 0.963)',
+                borderColor: 'rgba(10, 191, 197, 0.963)',
+                data: [
+                    {% for year, totals in totals_by_year.items %}
+                        {{ totals.grand_total }},
+                    {% endfor %}
+                ]
+            }
+        ]
+    };
+  
+    var barChart = new Chart(barChartCanvas, {
+        type: 'bar',
+        data: barChartData,
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            },
+            plugins: {
+                legend: {
+                    display: true,
+                    position: 'top'
+                },
+                title: {
+                    display: true,
+                    text: 'Yearly Totals'
+                }
+            }
+        }
+    });
+  </script>

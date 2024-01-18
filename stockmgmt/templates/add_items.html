@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% block title %}Crop{% endblock title %}
+{% block content %}
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="container">
+                <div class="row mt-5">
+                    <div class="col-md-6 offset-md-3">
+                        <div class="border bg-white p-3">
+                            <h3>{{title}}</h3>
+                            <hr>
+                            {% if request.user.is_staff %}
+                            <form method="POST">
+                                {% csrf_token %}
+                                <div class="col-12 mb-4">{{form.as_p}}</div>
+                                <a href="/stock" class="btn btn-secondary">Cancel</a>
+                                <input type="submit" value="Submit" class="btn btn-info">
+                            </form> 
+                            {% else %}
+                            <form method="POST">
+                                {% csrf_token %}
+                                <div class="col-12 mb-4">{{form.as_p}}</div>
+                                <div class="col-12 mb-4">
+                                {% if request.user.is_staff %}
+                                <a href="/stock" class="btn btn-info">Back</a>
+                                {% else %}
+                                <a href="/" class="btn btn-info">Back</a>
+                                {% endif %}
+                                <input type="submit" value="Submit" class="btn btn-primary">
+                                </div>
+                            </form> 
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock content %}

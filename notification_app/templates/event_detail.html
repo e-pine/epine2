@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>{{ farm_event.event }} Details</h1>
+
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Event</th>
+                <th>Cost</th>
+                <th>Date Added</th>
+                <th>Description</th>
+                <th>Broadcast On</th>
+                <th>End On</th>
+                <th>Sent</th>
+                <th>Status</th>
+                <th>Cost</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>{{ farm_event.event }}</td>
+                <td>{{ farm_event.details.cost }}</td>
+                <td>{{ farm_event.details.date_added }}</td>
+                <td>{{ farm_event.details.description }}</td>
+                <td>
+                    {% for notification in farm_event.broadcastnotification_set.all %}
+                        {{ notification.broadcast_on }}
+                    {% endfor %}
+                </td>
+                <td>
+                    {% for notification in farm_event.broadcastnotification_set.all %}
+                        {{ notification.end_on }}
+                    {% endfor %}
+                </td>
+                <td>
+                    {% for notification in farm_event.broadcastnotification_set.all %}
+                        {{ notification.sent }}
+                    {% endfor %}
+                </td>
+                <td>
+                    {% for notification in farm_event.broadcastnotification_set.all %}
+                        {{ notification.status }}
+                    {% endfor %}
+                </td>
+                <td>
+                    {% for notification in farm_event.broadcastnotification_set.all %}
+                        {{ notification.cost }}
+                    {% endfor %}
+                </td>
+                <td>
+                    {% for notification in farm_event.broadcastnotification_set.all %}
+                        {{ notification.description }}
+                    {% endfor %}
+                </td>
+            </tr>
+        </tbody>
+    </table>
+{% endblock content %}

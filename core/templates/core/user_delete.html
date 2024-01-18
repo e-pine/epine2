@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% block title %}Crop{% endblock title %}
+{% block content %}
+<div class="content-wrapper">
+<section class="content">
+    <div class="container-fluid">
+        <div class="row"> 
+            <div class="container">
+                <div class="row mt-5">
+                    <div class="col-md-6 offset-md-3">
+                        <div class="border bg-white p-3">
+                            <h4>Delete Item</h4>
+                            <hr>
+                            <div class="alert">
+                                <h5>Are you sure you want to delete user "{{user.first_name}} {{user.last_name}}"</h4>
+                            </div>
+                            <form method="POST">
+                                {% csrf_token %}
+                                {{form}}
+                                <a href="{% url 'list-user' %}" class="btn btn-secondary">Cancel</a>
+                                <input type="submit" value="Delete" class="btn btn-danger">
+                            </form> 
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+</div>            
+{% endblock content %}

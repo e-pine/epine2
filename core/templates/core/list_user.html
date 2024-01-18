@@ -1,0 +1,229 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}List User{% endblock title %}
+{% block content %}
+  <div class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm-6">
+          <h1 class="m-0">List of Users</h1>
+       </div>
+       <div class="col-sm-6">
+        <ul class="breadcrumb float-sm-right">
+          <li><a class="btn btn-primary" data-toggle="modal" data-target="#createCropModal"><i class="fa fa-user-plus"></i></a></li>
+          <!-- Create Crop Modal -->
+          <div class="modal fade" id="createCropModal" tabindex="-1" role="dialog" aria-labelledby="createCropModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <div class="modal-header bg-secondary">
+                  <!-- <h5 class="modal-title" id="createCropModalLabel">Create Crop</h5> -->
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                  <form action="" method="post">
+                    {% csrf_token %}
+                    {% if messages %}
+                      <div style="color: rgb(248, 75, 75); font-style: italic; font-size: medium;">
+                        {% for message in messages %}
+                              <strong>{{ message }}</strong>
+                            {% endfor %}
+                      </div>
+                      {% endif %}
+                    <div class="input-group mb-3">
+                      {{add_user.username}}
+                      <div class="input-group-append">
+                        <div class="input-group-text bg-secondary">
+                          <span class="fas fa-user"></span>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="input-group mb-3">
+                      {{add_user.first_name}}
+                      <div class="input-group-append">
+                        <div class="input-group-text bg-secondary">
+                          <span class="fas fa-user"></span>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="input-group mb-3">
+                      {{add_user.last_name}}
+                      <div class="input-group-append">
+                        <div class="input-group-text bg-secondary">
+                          <span class="fas fa-user"></span>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="input-group mb-3">
+                      {{add_user.email}}
+                      <div class="input-group-append">
+                        <div class="input-group-text bg-secondary">
+                          <span class="fas fa-envelope"></span>
+                        </div>
+                      </div>
+                    </div>
+                    <!-- <div class="input-group mb-3">
+                      {{form.phone_number}}
+                      <div class="input-group-append">
+                        <div class="input-group-text bg-secondary">
+                          <span class="fas fa-phone"></span>
+                        </div>
+                      </div>
+                    </div> -->
+                    <div class="input-group mb-3">
+                      {{add_user.password1}}
+                      <div class="input-group-append">
+                        <div class="input-group-text bg-secondary">
+                          <span class="fas fa-lock"></span>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="input-group mb-3">
+                      {{add_user.password2}}
+                      <div class="input-group-append">
+                        <div class="input-group-text bg-secondary">
+                          <span class="fas fa-lock"></span>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="input-group mb-3">
+                      {{add_user.role}}
+                      <div class="input-group-append">
+                        <div class="input-group-text bg-secondary">
+                          <span class="fas fa-users"></span>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-12 mb-4">
+                      <button type="submit" class="btn btn-secondary btn-block">Add</button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        </ul>
+      </div>
+    </div><!-- /.container-fluid -->
+  </div>
+<div class="col-md-12">
+  <div class="tile">
+      <div class="tile-body">
+          <div class="table-responsive">
+              <div id="sampleTable_wrapper" class="dataTables_wrapper container-fluid dt-bootstrap4 no-footer">
+                  <div class="row">
+                      <div class="col-sm-12">
+                          <table class="table table-hover table-bordered dataTable no-footer" id="sampleTable" role="grid" aria-describedby="sampleTable_info">
+                              <thead>
+                                  <tr role="row">
+                                      <th class="sorting_asc" tabindex="0" aria-controls="sampleTable" rowspan="1" colspan="1"  style="width: 102.141px;">USERNAME</th>
+                                      <th class="sorting" tabindex="0" aria-controls="sampleTable" rowspan="1" colspan="1"  style="width: 102.141px;">FIRST NAME</th>
+                                      <th class="sorting" tabindex="0" aria-controls="sampleTable" rowspan="1" colspan="1"  style="width: 102.141px;">LAST NAME</th>
+                                      <th class="sorting" tabindex="0" aria-controls="sampleTable" rowspan="1" colspan="1"  style="width: 102.141px;">EMAIL</th>
+                                      <th class="sorting" tabindex="0" aria-controls="sampleTable" rowspan="1" colspan="1"  style="width: 102.141px;">LAST LOGIN</th>
+                                      <th class="sorting" tabindex="0" aria-controls="sampleTable" rowspan="1" colspan="1"  style="width: 102.141px;">DATE REGISTER</th>
+                                      <th class="sorting" tabindex="0" aria-controls="sampleTable" rowspan="1" colspan="1"  style="width: 102.141px;">ROLE</th>
+                                      <th class="sorting" tabindex="0" aria-controls="sampleTable" rowspan="1" colspan="1"  style="width: 102.141px;"></th>
+                                      <!-- <th class="sorting" tabindex="0" aria-controls="sampleTable" rowspan="1" colspan="1"  style="width: 102.141px;">ACTION</th> -->
+                                  </tr>
+                              </thead>
+                              <tbody>
+                                {% for user in users %}
+                                      <tr role="row" class="odd">
+                                          <td class="sorting_1">{{user.username}}</td>
+                                          <td>{{user.first_name}}</td>
+                                          <td>{{user.last_name}}</td>
+                                          <td>{{user.email}}</td>
+                                          <td>{{user.last_login}}</td>
+                                          <td>{{user.date_joined}}</td>
+                                          <td>
+                                              {% for group in user.groups.all %}
+                                                {{ group.name }}
+                                              {% endfor %}
+                                          </td>
+                                          <td style="text-align: center;"><a href="{% url 'chat' username=user.username %}">Message</a></td>
+                                          <!-- <td style="text-align: center;">
+                                            <div class="">
+                                              <button class="btn delete-user" data-toggle="modal" data-target="#deleteUserModal" data-user-id="{{ user.id }}"><i class="fa fa-trash" style="color: red;"></i></button>
+                                            </div>
+                                          </td> -->
+                                      </tr>
+                                  {% endfor %}
+                              </tbody>
+                          </table>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </div>
+</div>
+
+</div>
+
+<script>
+  $(document).ready(function () {
+    // Handle delete button click
+    $(".delete-user").click(function () {
+      var userId = $(this).data("user-id");
+
+      // Set the value of the hidden input field in the modal
+      $("#userId").val(userId);
+
+      // When the "Delete" button in the modal is clicked
+      $("#deleteUserForm").submit(function (event) {
+        event.preventDefault(); // Prevent the form from submitting normally
+
+        $.ajax({
+          url: "{% url 'user_delete' 0 %}".replace("0", userId), // Use your URL pattern for user_delete
+          method: "POST",
+          data: $(this).serialize(), // Serialize the form data
+          success: function (response) {
+            // Handle the success response if needed
+            $("#deleteUserModal").modal("hide"); // Close the modal
+            // Reload or update the table as needed
+            // You can use AJAX to update the table without a full page reload
+            location.reload(); // Reload the page to reflect changes
+          },
+          error: function (error) {
+            console.error("Error deleting user:", error);
+          },
+        });
+      });
+    });
+  });
+</script>
+
+{% endblock content %}
+{% include 'graph_scripts/notify_scripts.html' %}
+{{ room_name|json_script:"room-name" }}
+    <script>
+        const roomName = JSON.parse(document.getElementById('room-name').textContent);
+
+        const notificationSocket = new WebSocket(
+            'ws://'
+            + window.location.host
+            + '/ws/notification/'
+            + roomName
+            + '/'
+        );
+
+        notificationSocket.onmessage = function(e) {
+            const data = JSON.parse(e.data);
+            // document.querySelector('#chat-log').value += (data.message + '\n');
+            console.log(data);
+            document.getElementById("notifications-dropdown").innerHTML = "<li class='dropdown-item'>" + data + "</li><hr class='dropdown-divider'>" + document.getElementById("notifications-dropdown").innerHTML;
+            // update notification badge form 0-99
+            document.getElementById("notification-badge").innerHTML = parseInt(document.getElementById("notification-badge").innerHTML) + 1;
+        };
+
+        notificationSocket.onclose = function(e) {
+            console.error('Chat socket closed unexpectedly');
+        };
+    </script>
+{% block extrascripts %}
+    <script type="text/javascript" src="{% static 'js/plugins/jquery.dataTables.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/plugins/dataTables.bootstrap.min.js' %}"></script>
+    <script type="text/javascript">$('#sampleTable').DataTable();</script>
+{% endblock extrascripts %}

@@ -1,0 +1,65 @@
+<script>
+    function updateChart() {
+        $.ajax({
+            url: '{% url "get_crop_chart_data" %}',
+            method: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                barChart.data.labels = data.labels;
+                barChart.data.datasets[0].data = data.hawaii_data;
+                barChart.data.datasets[1].data = data.pormosa_data;
+                barChart.update();
+            },
+            error: function (error) {
+                console.log('Error fetching data:', error);
+            }
+        });
+    }
+
+    var barChartCanvas = $('#cropbarChart').get(0).getContext('2d');
+
+    var barChartData = {
+        labels: [
+            {% for crop_data in hawaii_crop %}
+                '{{ crop_data.plant_date|date:"Y" }}', // Format as 'Year'
+            {% endfor %}
+        ],
+        datasets: [
+            {
+                label: 'Hawaii',
+                backgroundColor: 'rgba(60,141,188,0.9)',
+                borderColor: 'rgba(60,141,188,0.8)',
+                data: [
+                    {% for crop_data in hawaii_crop %}
+                        {{ crop_data.total_planted }},
+                    {% endfor %}
+                ]
+            },
+            {
+                label: 'Pormosa Crop',
+                backgroundColor: 'rgba(210, 214, 222, 1)',
+                borderColor: 'rgba(210, 214, 222, 1)',
+                data: [
+                    {% for crop_data in pormosa_crop %}
+                        {{ crop_data.total_planted }},
+                    {% endfor %}
+                ]
+            }
+        ]
+    };
+
+    var barChart = new Chart(barChartCanvas, {
+        type: 'bar', // Use 'bar' for a bar chart
+        data: barChartData,
+        options: {
+            // Customize chart options here
+        }
+    });
+
+    setInterval(updateChart, 1000);
+
+    // Sort crops by year
+    var cropsTable = $('#yourCropsTableId').DataTable({
+        order: [[2, 'desc']], // Order by plant date column (assuming it's the third column)
+    });
+</script>

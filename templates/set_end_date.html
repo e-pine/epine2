@@ -1,0 +1,8 @@
+<!-- set_end_date.html -->
+
+<h2>Set End Date</h2>
+<form method="post" action="{% url 'set_end_date' event.id %}">
+    {% csrf_token %}
+    <p>Event: {{ event.name }} - {{ event.start_date }}</p>
+    <button type="submit">Set End Date</button>
+</form>

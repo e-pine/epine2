@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Create Event</h2>
+<form method="post" action="{% url 'create_event' %}" id="eventForm">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Set Start Date</button>
+</form>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const startField = document.getElementById('id_start_date');
+        const endField = document.getElementById('id_end_date');
+        const setStartDateBtn = document.querySelector('button[type="submit"]');
+        
+        setStartDateBtn.addEventListener('click', function () {
+            const currentDate = new Date();
+            const dateString = currentDate.toISOString().split('T')[0];
+            startField.value = dateString;
+
+            // Enable the "Set End Date" button after setting the start date
+            setEndDateBtn.disabled = false;
+        });
+
+        // Disable the end date field initially
+        endField.disabled = true;
+    });
+</script>
+{% endblock content %}

@@ -1,0 +1,169 @@
+{% extends 'base.html' %}
+{% block title %}Bidding Room{% endblock title %}
+{% block content %}
+    <div class="content-header">
+        <div class="container-fluid">
+          <div class="row mb-2">
+            <div class="col-sm-6">
+                <h3>Bidding Rooms</h3>
+            </div><!-- /.col -->
+            <div class="col-sm-6">
+              <ol class="breadcrumb float-sm-right">
+                <li class="breadcrumb-item active"><a href="{% url 'bidding' %}">High-Quality</a></li>
+                <li class="breadcrumb-item active">Poor-Quality</li>
+                <li class="breadcrumb-item"><a href="{% url 'bidding_rejected' %}">Rejected</a></li>
+              </ol>
+            </div><!-- /.col -->
+          </div><!-- /.row -->
+        </div><!-- /.container-fluid -->
+    </div>
+    <div class="content-footer">
+      <div class="container-fluid">
+        <div class="row mt-2">
+          <div class="col-sm-6">
+          </div>
+          <div class="col-sm-6">
+            <ol class="float-sm-right">
+              <a href="#" class="btn btn-primary" data-toggle="modal" data-target="#Moadal">Create Room</a>
+              <div class="modal fade" id="Moadal" tabindex="-1" role="dialog" aria-labelledby="MoadalLabel" aria-hidden="true">
+                  <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                      <div class="modal-body">
+                        <div class="float-right">
+                          <a href="{% url 'bidding_low_quality' %}">
+                            <button type="button" class="close" aria-label="Close">
+                              <span aria-hidden="true">&times;</span>
+                            </button>
+                          </a>
+                        </div>
+                        <form method="post">
+                          {% csrf_token %}
+                          <div class="form-group">
+                            {{roomformlow}}
+                          </div>
+                          <button type="submit" class="btn btn-primary">Submit</button>
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              <div class="modal fade" id="biddierModal" tabindex="-1" role="dialog" aria-labelledby="biddierModalLabel" aria-hidden="true">
+                  <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                      <div class="modal-body">
+                        <div class="float-right">
+                          <a href="{% url 'bidding_low_quality' %}">
+                            <button type="button" class="close" aria-label="Close">
+                              <span aria-hidden="true">&times;</span>
+                            </button>
+                          </a>
+                        </div>
+                        <form method="post">
+                          {% csrf_token %}
+                          <div class="form-group">
+                            {{bad_quality_form}}
+                          </div>
+                          <div class="float-right">
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                          </div>
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+            </ol>
+          </div>
+        </div><!-- /.row -->
+      </div><!-- /.container-fluid -->
+  </div>
+<section class="content">
+    <style>
+      /* Add this CSS to add borders only to the sides and inside horizontal lines of the table */
+      #sampleTable {
+          border-collapse: collapse;
+          border-left: 1px solid #ddd; /* Adjust the color as needed */
+          border-right: 1px solid #ddd; /* Adjust the color as needed */
+      }
+  
+      #sampleTable th, #sampleTable td {
+          border-top: 1px solid #ddd; /* Adjust the color as needed */
+          border-bottom: 1px solid #ddd; /* Adjust the color as needed */
+          border-left: none; /* Remove left border for cells */
+          border-right: none; /* Remove right border for cells */
+      }
+  
+      #sampleTable th {
+          background-color: #f2f2f2; /* Optional: Add background color to header row */
+      }
+  
+      .hidden-header {
+          display: none;
+      }
+  </style>
+  
+  
+    <div class="col-md-12">
+      <div class="tile">
+          <div class="tile-body">
+              <div class="table-responsive">
+                  <div id="sampleTable_wrapper" class="dataTables_wrapper container-fluid dt-bootstrap4 no-footer">
+                      <div class="row">
+                          <div class="col-sm-12 ">
+                              <table class="table table-hover table-bordered dataTable no-footer" id="sampleTable" role="grid" aria-describedby="sampleTable_info">
+                                  <thead class="hidden-header">
+                                      <tr role="row" class="bg-light">
+                                          <th class="sorting_asc" tabindex="0" aria-controls="sampleTable" rowspan="1" colspan="1"  style="width: 102.141px;"></th>
+                                          <th class="sorting_asc" tabindex="0" aria-controls="sampleTable" rowspan="1" colspan="1"  style="width: 102.141px;"></th>
+                                          <th class="sorting" tabindex="0" aria-controls="sampleTable" rowspan="1" colspan="1"  style="width: 102.141px;"></th>
+                                          <th class="sorting" tabindex="0" aria-controls="sampleTable" rowspan="1" colspan="1"  style="width: 102.141px;"></th>
+                                          <th class="sorting" tabindex="0" aria-controls="sampleTable" rowspan="1" colspan="1"  style="width: 102.141px;"></th>
+                                          <th class="sorting" tabindex="0" aria-controls="sampleTable" rowspan="1" colspan="1"  style="width: 102.141px;"></th>
+                                      </tr>
+                                  </thead>
+                                  <tbody>
+                                    {% for room in room_low %}
+                                          <tr role="row" class="odd">
+                                            <td><i class='far fa-comment-dots' style='font-size:35px'></i></td>
+                                              <td class="sorting_1"><strong><a href="{% url 'roomlow' room.slug %}"><h5 style="color: black;">{{room.name}}</h5><a></strong></td>
+                                              <td><a href="{% url 'roomlow' room.slug %}"><p style="color: black;">{{room.date_added}}</p></a></td>
+                                              <td>Click <a href="#" class="" data-toggle="modal" data-target="#biddierModal">here</a> the buyer who won the bidding.</td>
+                                              <td class="text-center">
+                                                <a href="{% url 'roomlow_delete' room.id %}"><i class="fa fa-trash" style="color: red;"></i></a>
+                                              </td>
+                                              <td>
+                                                <button class="btn btn-sm btn-secondary copy-link-btn" onclick="copyRoomLink('{{ room.slug }}')">
+
+                                                  Copy Link
+                                                </button>
+                                             </td>
+                                          </tr>
+                                      {% endfor %}
+                                  </tbody>
+                              </table>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+    </div>
+  </section>
+  <script>
+    function copyRoomLink(slug) {
+        var absoluteURL = window.location.origin + '{% url "roomlow" "SLUG" %}'.replace('SLUG', slug);
+        var dummyInput = document.createElement('input');
+        document.body.appendChild(dummyInput);
+        dummyInput.value = absoluteURL;
+        dummyInput.select();
+        document.execCommand('copy');
+        document.body.removeChild(dummyInput);
+        alert('Link copied to clipboard!');
+    }
+</script>
+  {% endblock content %}
+  {% block extrascripts %}
+    
+  
+  <script type="text/javascript">$('#sampleTable').DataTable();</script>
+
+  {% endblock extrascripts %}

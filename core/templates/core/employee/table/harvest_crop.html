@@ -1,0 +1,87 @@
+{% load custom_filters %}
+<div class="card">
+  <a href="{% url 'harvest_list' %}" class="card-success">
+    <div class="card-header">
+      <h3 class="card-title">Harvest Crops</h3>
+
+      <div class="card-tools">
+        <button type="button" class="btn btn-tool" data-card-widget="collapse">
+          <i class="fas fa-minus"></i>
+        </button>
+        <button type="button" class="btn btn-tool" data-card-widget="remove">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+    </div>
+  </a>
+  <div class="card-body">
+    <table class="table table-bordered table-hover">
+      <thead>
+          <tr class="bg-light">
+              <th>Year</th>
+              <th>Variety</th>
+              <th>Total Number</th>
+              <th>Date</th>
+          </tr>
+      </thead>
+      <tbody>
+          {% for year, bids_by_year in harvested_good_by_year.items %}
+              {% for bid_win in bids_by_year %}
+                  <tr class="data-row-harvest">
+                      {% if forloop.first %}
+                          <td rowspan="{{ bids_by_year|length }}">{{ year }}</td>
+                      {% endif %}
+                      <td>{{ bid_win.category }}</td>
+                      <td>
+                          {% if bid_win.total_buy_pine %}
+                              <a class="text-dark" href="{% url 'bidding_update' bid_win.id %}">{{ bid_win.total_buy_pine|format_number }}</a>
+                          {% else %}
+                              <a href="{% url 'bidding_update' bid_win.id %}">Click here</a>
+                          {% endif %}
+                      </td>
+                      <td>{{ bid_win.date }}</td>
+                  </tr>
+              {% endfor %}
+          {% endfor %}
+      </tbody>
+  </table>
+  <div class="float-right p-2">
+    <!-- <a class="btn btn-outline-secondary" data-toggle="modal" data-target="#HarvestModal">Add</a> -->
+      <!-- Yield Modal -->
+      <div class="modal fade" id="HarvestModal" tabindex="-1" role="dialog" aria-labelledby="HarvestModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header bg-secondary">
+              <!-- <h5 class="modal-title" id="HarvestModalLabel">Create Crop</h5> -->
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <form method="post">
+                {% csrf_token %}
+                <div class="card-body mb-3">
+                  {{rejected_form}}
+                </div>
+                <div class="col-12 mb-4">
+                  <button type="submit" class="btn btn-secondary btn-block">Add</button>
+                </div>
+                
+                <!-- /.card-body -->
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    <button id="see-more-harvest" class="btn btn-outline-primary">See More</button>
+  </div>
+  
+  
+  <style>
+      .data-row:nth-child(n+3) {
+          display: none;
+      }
+  </style>
+  </div>
+  <!-- /.card-body -->
+</div>

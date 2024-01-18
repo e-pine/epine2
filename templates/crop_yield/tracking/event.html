@@ -1,0 +1,133 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}List User{% endblock title %}
+{% block content %}
+{% load custom_filters %}
+<div class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm-6">
+          <a href="{% url 'farm_event' %}"><h1 class="m-0" style="color: black;">Farm Activity</h1></a>
+       </div>
+    </div><!-- /.container-fluid -->
+  </div>
+  <br>
+</div>
+<section class="content">
+  <div class="row">
+    <div class="col-md-3">
+
+      <div class="card">
+        <div class="card-header">
+          <h4 class="card-title"><strong>Activities</strong></h4>
+        </div>
+          <div id="external-events" class="table-scroll">
+            <table class="table table-hover dataTable no-footer" id="" role="grid" aria-describedby="sampleTable_info">
+              <tbody>
+                  {% for events in event_list %}
+                  <tr role="row" class="odd">
+                      <td class="sorting_1"><a href="{% url 'event' events.id %}">{{ events.name }}</a></td>
+                      <td><small>{{ events.status }}</small></td>
+                  </tr>
+                  {% endfor %}
+              </tbody>
+          </table>
+        </div>
+        <!-- /.card-body -->
+      </div>
+    </div>
+    <!-- /.col -->
+    <div class="col-md-9">
+      <div class="card card-success card-outline">
+        <div class="card-header">
+          <h2 class="card-title"><strong>{{ notification.name }} ({{ notification.variety }})</strong></h3>
+        </div>
+        <!-- /.card-header -->
+        <div class="card-body p-3">
+          <div class="com-sm-12">
+              <ul class="nav nav-pills nav-sidebar flex-column">
+                <li class="nav-item">
+                 
+                  </a>
+                </li>
+                <li>
+                  <p>From: {{ notification.broadcast_on }}</p>
+                </li>
+                <li>
+                  <p>To: {{ notification.end_on }}</p>
+                </li>
+              </ul>
+            </div>
+            <div class="dropdown-divider"></div>
+            <div class="com-sm-12">
+
+              <h2>Farm Event Details</h2>
+              <table class="table table-bordered table-hover">
+                  <thead>
+                      <tr>
+                          <th style="width: 102.141px;">Day</th>
+                          <th style="width: 102.141px;">Description</th>
+                          <th style="width: 102.141px;">Date Added</th>
+                      </tr>
+                  </thead>
+                  <tbody>
+                      {% for detail in notification.details.all %}
+                          <tr>
+                              <td>{{ forloop.counter }}</td>
+                              <td>{{ detail.description }}</td>
+                              <td>{{ detail.date_added }}</td>
+                              
+                          </tr>
+                      {% endfor %}
+                  </tbody>
+              </table>
+            </div>
+        </div>
+      </div>
+      <!-- /.card -->
+    </div>
+    <!-- /.col -->
+  </div>
+  <!-- /.row -->
+</section>
+
+<script>
+  $(document).ready(function () {
+    // Handle delete button click
+    $(".delete-crop").click(function () {
+      var cropId = $(this).data("crop-id");
+      
+      // When the "Delete" button in the modal is clicked
+      $("#confirmDelete").click(function () {
+        $.ajax({
+          url: "{% url 'bidder_win_list_delete' 0 %}".replace("0", cropId), // Use your URL pattern for crop_delete
+          method: "POST",
+          data: {
+            csrfmiddlewaretoken: "{{ csrf_token }}",
+            // Add any other data you need to send here
+          },
+          success: function (response) {
+            // Handle the success response if needed
+            // For example, you can remove the deleted row from the table
+            $("#deleteCropModal").modal("hide"); // Close the modal
+            // Reload or update the table as needed
+            // You can use AJAX to update the table without a full page reload
+            location.reload(); // Reload the page to reflect changes
+          },
+          error: function (error) {
+            console.error("Error deleting crop:", error);
+          },
+        });
+      });
+    });
+  });
+</script>
+
+{% endblock content %}
+
+{% block extrascripts %}
+    <script type="text/javascript" src="{% static 'js/plugins/jquery.dataTables.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/plugins/dataTables.bootstrap.min.js' %}"></script>
+    <script type="text/javascript">$('#sampleTable').DataTable();</script>
+{% endblock extrascripts %}
+

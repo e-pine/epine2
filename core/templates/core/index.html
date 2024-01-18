@@ -1,0 +1,796 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load custom_filters %}
+{% block css %}
+
+{% endblock css %}
+{% block content %}
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1 class="m-0">Dashboard</h1>
+            {% for pm in chat_messages %}
+            {{pm.message}}
+            {% endfor %}
+          </div><!-- /.col -->
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a href="#">Home</a></li>
+              <li class="breadcrumb-item active">Dashboard</li>
+            </ol>
+          </div><!-- /.col -->
+        </div><!-- /.row -->
+      </div><!-- /.container-fluid -->
+    </div>
+    <!-- Main content -->
+
+
+    <section class="content">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-md-2">
+<!-- -------------------------------sales Trend-------------------------------------------------------- -->
+          <!-- <div class="card">
+            <a href="{% url 'sales_trend' %}" class="card-primary">
+              <div class="card-header">
+                <h3 class="card-title">Sale Trends</h3>
+  
+                <div class="card-tools">
+                  <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                    <i class="fas fa-minus"></i>
+                  </button>
+                  <button type="button" class="btn btn-tool" data-card-widget="remove">
+                    <i class="fas fa-times"></i>
+                  </button>
+                </div>
+              </div>
+            </a>
+            <div class="card-body">
+              <div class="chart">
+                <canvas id="salesbarChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+              </div>
+            </div>
+          
+          </div> -->
+          <a href="{% url 'crop_list' %}">
+            <div class="small-box bg-info">
+              <div class="inner">
+                {% if first_updated_data %}
+                    <h4>{{ first_updated_data.total_planted|format_number }} pcs.</h4>
+                {% endif %}
+                <!-- {% for year, crops_by_year in crops_by_year.items %}
+                {% for crop in crops_by_year %}
+                {{ crop.number_planted }}
+               
+               {% endfor %}
+               {% endfor %} -->
+  
+                <p>TOTAL PLANTED</p>
+              </div>
+              <div class="icon">
+                <!-- <i class='fas fa-seedling'></i> -->
+              </div>
+              
+            </div>
+          </a>
+          <a href="{% url 'harvest_list' %}">
+            <div class="small-box bg-success">
+              <div class="inner">
+                <!-- <h4>{{total_harvest|format_number}} pcs..</h4> -->
+                {% if overall_totals_by_year_harv %}
+                    {% for year, totals in overall_totals_by_year_harv.items %}
+                        {% if forloop.last %}
+                            <h4>{{ totals.overall_grand_total|default:"0"|format_number }} pcs.</h4>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+            
+                <p>TOTAL HARVEST</p>
+              </div>
+              <div class="icon">
+                <!-- <i class='fas fa-seedling'></i> -->
+              </div>
+              
+            </div>
+          </a>
+          <a href="{% url 'harvest_revenues' %}">
+            <div class="small-box bg-warning">
+              <div class="inner">
+                <!-- <h4>₱ {{overall_sum|format_number}}</h4> -->
+                <!-- {% if overall %}
+                    {% for year, difference in overall.items %}
+                        {% if forloop.last %}
+                            <h4>₱ {{ difference|default:"0"|format_number }}</h4>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %} -->
+                {% if totals_by_year %}
+                    {% for year, totals in totals_by_year.items %}
+                        {% if forloop.last %}
+                            <h4>₱ {{ totals.grand_total|format_number }}</h4>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+
+                <p>REVENUES</p>
+              </div>
+              <div class="icon">
+                <!-- <i class='fas fa-seedling'></i> -->
+              </div>
+              
+            </div>
+          </a>
+          <a href="{% url 'crop_expense' %}">
+            <div class="small-box bg-danger">
+              <div class="inner">
+                {% if total_expense_yearly %}
+                    {% with latest_entry=total_expense_yearly|last %}
+                        <h4>₱ {{ latest_entry.total|default:"0"|format_number }}</h4>
+                    {% endwith %}
+                {% endif %}
+                <p>EXPENSES</p>
+              </div>
+              <div class="icon">
+                <!-- <i class='fas fa-seedling'></i> -->
+              </div>
+              
+            </div>
+          </a>
+          <!-- <a href="{% url 'leaderboard' %}">
+          <div class="small-box bg-info">
+            <div class="inner">
+              {% for entry in leaderboard_data %}
+                <h4>{{ entry.user__username }} <small>({{ entry.total_buy }})</small></h4>
+              {% endfor %}
+              <p>Top Bidders</p>
+            </div>
+            <div class="icon">
+              <i class='fas fa-seedling'></i>
+            </div>
+          </div>
+        </a> -->
+<!-- ---------------------------------Profit------------------------------------------------------- -->
+          </div>
+          <div class="col-md-7">
+            <!-- PIE CHART -->
+            <div class="card">
+              <a href="{% url 'sales_trend' %}" class="card-light">
+                <div class="card-header" style="background-color: rgba(44, 80, 241, 0.427); color: white;">
+                  <h3 class="card-title">Sales Trend</h3>
+  
+                  <!-- <div class="card-tools">
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                      <i class="fas fa-minus"></i>
+                    </button>
+                    <button type="button" class="btn btn-tool" data-card-widget="remove">
+                      <i class="fas fa-times"></i>
+                    </button>
+                  </div> -->
+                </div>
+              </a>
+              <div class="card-body">
+                <canvas id="salesbarChart" style="min-height: 360px; height: 360px; max-height: 360px; max-width: 100%;"></canvas>
+              </div>
+              <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+
+          </div>
+          
+          <style>
+            .r {
+              height: 50px; 
+             
+              justify-content: space-between;
+              align-items: center;
+            }
+          </style>
+          <div class="col-md-3">
+              <div class="" style="height: 47.5%;">
+                <div class="small-box bg-light" id="setAContainer">
+                  <div class="r card-header" style="text-align: center;">
+                    <p>
+                        <a class="btn" id="leftNextButton" onclick="toggleDiv('left')" style="float: left;"><i class='fas fa-angle-left'></i></a>
+                        <a href="{% url 'leaderboard' %}">Top Buyers(Set-A)</a>
+                        <a class="btn" id="leftNextButton" onclick="toggleDiv('left')" style="float: right;"><i class='fas fa-angle-right'></i></a>
+                    </p>
+                </div>
+                
+                  <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th>Username</th>
+                            <th>Total Buy(pcs.)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for entry in leaderboard_data %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ entry.user__username }}</td>
+                            <td>{{ entry.total_buy|format_number }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                  </table>
+                  <!-- <div class="icon">
+                    <i class='fas fa-bar-chart'></i>
+                  </div> -->
+                </div>
+                <div class="small-box bg-light" id="setBContainer" style="display: none;">
+                  <div class="r card-header text" style="text-align: center;">
+                    <p>
+                        <a class="btn" id="leftNextButton" onclick="toggleDiv('left')" style="float: left;"><i class='fas fa-angle-left'></i></a>
+                        <a href="{% url 'leaderboard_b' %}">Top Buyers(Set-B)</a>&nbsp;
+                        <a class="btn" id="leftNextButton" onclick="toggleDiv('left')" style="float: right;"><i class='fas fa-angle-right'></i></a>
+                    </p>
+                </div>
+                
+                  <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th>Username</th>
+                            <th>Total Buy(pcs.)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for entry in leaderboard_data_harvested_bad %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ entry.user__username }}</td>
+                            <td>{{ entry.total_buy_harv|format_number }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                  </table>
+                </div>
+                <div class="small-box bg-light" id="setCContainer" style="display: none;">
+                  <div class="r card-header" style="text-align: center;">
+                    <p>
+                      <a class="btn" id="leftNextButton" onclick="toggleDiv('left')" style="float: left;"><i class='fas fa-angle-left'></i></a>
+                        <a href="{% url 'leaderboard_c' %}">Top Buyers(Rejected)</a>&nbsp; 
+                        <a class="btn" id="leftNextButton" onclick="toggleDiv('left')" style="float: right;"><i class='fas fa-angle-right'></i></a>
+                    </p>
+                    
+                </div>
+                  <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th>Username</th>
+                            <th>Total Buy(pcs.)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for entry in leaderboard_data_rejected %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ entry.user__username }}</td>
+                            <td>{{ entry.total_buy_rej|format_number }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                  </table>
+                </div>
+                <div class="card">
+                  <a href="{% url 'sales_trend' %}" style="color: black;">
+                    <div id="graphTitleLabel" style="text-align: center; margin-top: 4px;">
+                      ROI
+                    </div>
+                    <hr style="margin-top: 0%;">
+                    <div class="card-body">
+                      <!-- <canvas id="" style="min-height: 114px; height: 114px; max-height: 114px; max-width: 100%;"></canvas> -->
+                      <div class="chart-responsive">
+                        <canvas id="yearlyRoiPieChart" height="110"></canvas>
+                      </div>
+                  </a>
+                </div>
+              </div>
+              <script>
+                let currentContainer = 1;
+            
+                function toggleDiv() {
+                    if (currentContainer === 1) {
+                        $('#setAContainer').toggle(false);
+                        $('#setBContainer').toggle();
+                        currentContainer = 2;
+                    } else if (currentContainer === 2) {
+                        $('#setBContainer').toggle(false);
+                        $('#setCContainer').toggle();
+                        currentContainer = 3;
+                    } else if (currentContainer === 3) {
+                        $('#setCContainer').toggle(false);
+                        $('#setAContainer').toggle();
+                        currentContainer = 1;
+                    }
+                }
+            </script>
+<!-- --------------------------------------------ROI------------------------------------------------------------------- -->
+          
+          
+          </div>
+          <!-- /.col (RIGHT) -->
+        </div>
+        <!-- /.row -->
+      </div>
+    </section>
+
+    <section class="content">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-md-6">
+<!-- --------------------------------------------Revenues------------------------------------------------------------------ -->          
+            <div class="card">
+              <a href="{% url 'harvest_revenues' %}" class="card-warning">
+                <div class="card-header">
+                  <h3 class="card-title">Revenues</h3>
+      
+                  <div class="card-tools">
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                      <i class="fas fa-minus"></i>
+                    </button>
+                    <button type="button" class="btn btn-tool" data-card-widget="remove">
+                      <i class="fas fa-times"></i>
+                    </button>
+                  </div>
+                </div>
+              </a>
+              <div class="card-body">
+                <div class="chart">
+                  <canvas id="revenuesbarChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+                </div>
+              </div>
+         
+            </div>
+<!-- --------------------------------------------Planted Crop------------------------------------------------------------------ -->
+            <div class="card">
+              <a href="{% url 'crop_list' %}" class="card-success">
+                <div class="card-header">
+                  <h3 class="card-title">Planted Crop</h3>
+    
+                  <div class="card-tools">
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                      <i class="fas fa-minus"></i>
+                    </button>
+                    <button type="button" class="btn btn-tool" data-card-widget="remove">
+                      <i class="fas fa-times"></i>
+                    </button>
+                  </div>
+                </div>
+              </a>
+              <div class="card-body">
+                <div class="chart">
+                  <canvas id="cropbarChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+                </div>
+              </div>
+              <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+          </div>
+          <div class="col-md-6">
+<!-- ---------------------------------expenses------------------------------------------------------- -->
+            <div class="card">
+              <a href="{% url 'expe_planting' %}" class="card-danger">
+                <div class="card-header">
+                  <h3 class="card-title">Expenses</h3>
+
+                  <div class="card-tools">
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                      <i class="fas fa-minus"></i>
+                    </button>
+                    <button type="button" class="btn btn-tool" data-card-widget="remove">
+                      <i class="fas fa-times"></i>
+                    </button>
+                  </div>
+                </div>
+              </a>
+              <div class="card-body">
+                <canvas id="expenseBarChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+              </div>
+              <!-- /.card-body -->
+            </div>
+
+<!--------------------------------------------- Harvest Crop ----------------------------------------------------------------------->
+          <div class="card">
+            <a href="{% url 'har_high_quality' %}" class="card-info">
+              <div class="card-header">
+                <h3 class="card-title">Harvested Crop</h3>
+  
+                <div class="card-tools">
+                  <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                    <i class="fas fa-minus"></i>
+                  </button>
+                  <button type="button" class="btn btn-tool" data-card-widget="remove">
+                    <i class="fas fa-times"></i>
+                  </button>
+                </div>
+              </div>
+            </a>
+            <div class="card-body">
+              <div class="chart">
+                <canvas id="harvestbarChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+              </div>
+            </div>
+            <!-- /.card-body -->
+          </div>
+<!-- ----------------------------------------------------------------------------------------------------------------------------------------------- -->
+            </div>
+            <!-- /.card -->
+          </div>
+        </div>
+      </div>
+    </section>
+    <canvas id="salesbarChart" style="height: 230px;"></canvas>
+    <!-- /.content -->
+ 
+  <!-- Create Room Modal -->
+  <div class="modal fade" id="roomModal" tabindex="-1" role="dialog" aria-labelledby="roomModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-body">
+          <div class="float-right">
+            <a href="{% url 'index' %}">
+              <button type="button" class="close" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </a>
+          </div>
+          <form method="post">
+            {% csrf_token %}
+            <div class="form-group">
+              {{roomform}}
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock content %}
+<!-- -----------------------------------------------NOTIFICATION ---------------------------------------- -->
+
+    
+{% block script %}
+<script src="{% static 'core/admin.js' %}"></script>
+<!-- ----------------------------------------------Stocks Script-------------------------------------- -->
+
+<script>
+  $(function () {
+    var donutChartCanvas = $('#donutChart').get(0).getContext('2d')
+    var donutData        = {
+      labels: [
+      {% for stocks in stock %} '{{stocks.item_name}}', {% endfor %}
+      ],
+      datasets: [
+        {
+          data: [{% for stocks in stock %}{{ stocks.quantity }}, {% endfor %}],
+          backgroundColor : ['#f56954', '#00a65a', '#f39c12', '#00c0ef', '#3c8dbc', '#d2d6de'],
+        }
+      ]
+    }
+    var donutOptions     = {
+      maintainAspectRatio : false,
+      responsive : true,
+    }
+    //Create pie or douhnut chart
+    // You can switch between pie and douhnut using the method below.
+    new Chart(donutChartCanvas, {
+      type: 'doughnut',
+      data: donutData,
+      options: donutOptions
+    })
+
+    //-------------
+    //- PIE CHART -
+    //-------------
+    // Get context with jQuery - using jQuery's .get() method.
+    var pieChartCanvas = $('#pieChart').get(0).getContext('2d')
+    var pieData        = {
+      labels: [
+          'Expenses',
+          'Revenues',
+          'Profit',
+      ],
+      datasets: [
+        {
+          data: [{{total_expenses}}, {{total_value}}, {{income}}],
+          backgroundColor : ['#d2d6de', '#3c8dbc', '#00c0ef', '#f39c12', '#00a65a', '#f56954'],
+        }
+      ]
+    }
+    var pieOptions     = {
+      maintainAspectRatio : false,
+      responsive : true,
+    }
+    //Create pie or douhnut chart
+    // You can switch between pie and douhnut using the method below.
+    new Chart(pieChartCanvas, {
+      type: 'pie',
+      data: pieData,
+      options: pieOptions
+    })
+
+    //-------------
+    //- BAR CHART -
+    //-------------
+    var barChartCanvas = $('#barChart').get(0).getContext('2d')
+    var barChartData = $.extend(true, {}, areaChartData)
+    var temp0 = areaChartData.datasets[0]
+    var temp1 = areaChartData.datasets[1]
+    barChartData.datasets[0] = temp1
+    barChartData.datasets[1] = temp0
+
+    var barChartOptions = {
+      responsive              : true,
+      maintainAspectRatio     : false,
+      datasetFill             : false
+    }
+
+    new Chart(barChartCanvas, {
+      type: 'bar',
+      data: barChartData,
+      options: barChartOptions
+    })
+
+    //---------------------
+    //- STACKED BAR CHART -
+    //---------------------
+    var stackedBarChartCanvas = $('#stackedBarChart').get(0).getContext('2d')
+    var stackedBarChartData = $.extend(true, {}, barChartData)
+
+    var stackedBarChartOptions = {
+      responsive              : true,
+      maintainAspectRatio     : false,
+      scales: {
+        xAxes: [{
+          stacked: true,
+        }],
+        yAxes: [{
+          stacked: true
+        }]
+      }
+    }
+
+    new Chart(stackedBarChartCanvas, {
+      type: 'bar',
+      data: stackedBarChartData,
+      options: stackedBarChartOptions
+    })
+  })
+</script>
+
+<!-- -----------------------------------------------yields------------------- -->
+<script>
+  var areaChartCanvas = $('#areaChart').get(0).getContext('2d');
+
+  var areaChartData = {
+      labels: [
+          {% for yield_data in hawaii_yields %}
+              '{{ yield_data.harvest_date|date:"F Y" }}', // Format as 'Month Year'
+          {% endfor %}
+      ],
+      datasets: [
+          {
+              label: 'Hawaii Yield',
+              backgroundColor: 'rgba(60,141,188,0.9)',
+              borderColor: 'rgba(60,141,188,0.8)',
+              pointRadius: false,
+              pointColor: '#3b8bba',
+              pointStrokeColor: 'rgba(60,141,188,1)',
+              pointHighlightFill: '#fff',
+              pointHighlightStroke: 'rgba(60,141,188,1)',
+              data: [
+                  {% for yield_data in hawaii_yields %}
+                      {{ yield_data.total_yield }},
+                  {% endfor %}
+              ]
+          },
+          {
+              label: 'Pormosa Yield',
+              backgroundColor: 'rgba(210, 214, 222, 1)',
+              borderColor: 'rgba(210, 214, 222, 1)',
+              pointRadius: false,
+              pointColor: 'rgba(210, 214, 222, 1)',
+              pointStrokeColor: '#c1c7d1',
+              pointHighlightFill: '#fff',
+              pointHighlightStroke: 'rgba(220,220,220,1)',
+              data: [
+                  {% for yield_data in pormosa_yields %}
+                      {{ yield_data.total_yield }},
+                  {% endfor %}
+              ]
+          }
+      ]
+  };
+
+  var areaChart = new Chart(areaChartCanvas, {
+      type: 'line',
+      data: areaChartData,
+      options: {
+          // Customize chart options here
+      }
+  });
+
+  // Bar chart
+  var barChartCanvas = $('#barChart').get(0).getContext('2d');
+
+    var barChartData = {
+        labels: [
+            {% for yield_data in hawaii_yields %}
+                '{{ yield_data.harvest_date|date:"F Y" }}', // Format as 'Month Year'
+            {% endfor %}
+        ],
+        datasets: [
+            {
+                label: 'Hawaii Yield',
+                backgroundColor: 'rgba(60,141,188,0.9)',
+                borderColor: 'rgba(60,141,188,0.8)',
+                data: [
+                    {% for yield_data in hawaii_yields %}
+                        {{ yield_data.total_yield }},
+                    {% endfor %}
+                ]
+            },
+            {
+                label: 'Pormosa Yield',
+                backgroundColor: 'rgba(210, 214, 222, 1)',
+                borderColor: 'rgba(210, 214, 222, 1)',
+                data: [
+                    {% for yield_data in pormosa_yields %}
+                        {{ yield_data.total_yield }},
+                    {% endfor %}
+                ]
+            }
+        ]
+    };
+
+    var barChart = new Chart(barChartCanvas, {
+        type: 'bar', // Use 'bar' for a bar chart
+        data: barChartData,
+        options: {
+            // Customize chart options here
+        }
+    });
+
+    // stackedbarchart
+    var stackedBarChartCanvas = $('#stackedBarChart').get(0).getContext('2d');
+
+    var stackedBarChartData = {
+        labels: [
+            {% for yield_data in hawaii_yields %}
+                '{{ yield_data.harvest_date|date:"F Y" }}', // Format as 'Month Year'
+            {% endfor %}
+        ],
+        datasets: [
+            {
+                label: 'Hawaii Yield',
+                backgroundColor: 'rgba(60,141,188,0.9)',
+                borderColor: 'rgba(60,141,188,0.8)',
+                data: [
+                    {% for yield_data in hawaii_yields %}
+                        {{ yield_data.total_yield }},
+                    {% endfor %}
+                ],
+                stack: 'stack'
+            },
+            {
+                label: 'Pormosa Yield',
+                backgroundColor: 'rgba(210, 214, 222, 1)',
+                borderColor: 'rgba(210, 214, 222, 1)',
+                data: [
+                    {% for yield_data in pormosa_yields %}
+                        {{ yield_data.total_yield }},
+                    {% endfor %}
+                ],
+                stack: 'stack'
+            }
+        ]
+    };
+
+    var stackedBarChart = new Chart(stackedBarChartCanvas, {
+        type: 'bar',
+        data: stackedBarChartData,
+        options: {
+            scales: {
+                x: {
+                    stacked: true,
+                },
+                y: {
+                    stacked: true,
+                }
+            },
+            // Customize other chart options here
+        }
+    });
+</script>
+<!-- --------------------------------Crop----------------------------------------- -->
+
+<!-- ---------------------------------crop---------------------------------------------- -->
+
+
+<!-- ---------------------------FOR SALES TREND ------------------------------------------------- -->
+{% include 'graph_scripts/trend_scripts.html' %}
+{% include 'graph_scripts/roi.html' %}
+{% include 'graph_scripts/crop_chart_scripts.html' %}
+{% include 'graph_scripts/expe_scripts.html' %}
+<!-- -------------FOR EXPENSES--------------- -->
+
+
+<!-- --------------Revenues---------------------- -->
+<script>
+  var barChartCanvas = $('#revenuesbarChart').get(0).getContext('2d');
+
+  var barChartData = {
+      labels: [
+          {% for year, totals in totals_by_year.items %}
+              '{{ year }}',
+          {% endfor %}
+      ],
+      datasets: [
+          // {
+          //     label: 'Bad Quality Pineaples',
+          //     backgroundColor: 'rgba(210, 214, 222, 1)',
+          //     borderColor: 'rgba(210, 214, 222, 1)',
+          //     data: [
+          //         {% for year, totals in totals_by_year.items %}
+          //             {{ totals.harvested_bad_total }},
+          //         {% endfor %}
+          //     ]
+          // },
+          // {
+          //     label: 'Good Quality Pineaples',
+          //       backgroundColor: 'rgba(60,141,188,0.9)',
+          //       borderColor: 'rgba(60,141,188,0.8)',
+          //       data: [
+          //           {% for year, totals in totals_by_year.items %}
+          //               {{ totals.harvested_good_total }},
+          //           {% endfor %}
+          //       ]
+          // },
+          {
+              label: 'Revenues',
+              backgroundColor: 'rgb(255, 193, 7, .59)',
+              borderColor: 'rgb(255, 193, 7, .59)',
+              data: [
+                  {% for year, totals in totals_by_year.items %}
+                      {{ totals.grand_total }},
+                  {% endfor %}
+              ]
+          }
+      ]
+  };
+
+  var barChart = new Chart(barChartCanvas, {
+      type: 'bar',
+      data: barChartData,
+      options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+              y: {
+                  beginAtZero: true
+              }
+          },
+          plugins: {
+              legend: {
+                  display: true,
+                  position: 'top'
+              },
+              title: {
+                  display: true,
+                  text: 'Yearly Totals'
+              }
+          }
+      }
+  });
+</script>
+<!----------------------------- harvested--------------------------------- -->
+{% include 'crop_yield/harvest/harv_script.html' %}
+
+
+
+{% endblock script %}

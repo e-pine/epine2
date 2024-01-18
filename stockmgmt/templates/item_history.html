@@ -1,0 +1,28 @@
+<table class="table table-bordered table-hover">
+    <thead>
+        <tr class="bg-success">
+            <th>No.</th>
+            <th>User</th>
+            <th>Action</th>
+            <th>Item</th>
+            <th>Quantity</th>
+            <th>Total Price</th>
+            <th>Issued By</th>
+            <th>Received By</th>
+            <th>Timestamp</th>
+        </tr>
+    </thead>
+    {% for history in item_history %}
+        <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ history.user.username }}</td>
+            <td>{{ history.action }}</td>
+            <td>{{ history.item.item_name }}</td>
+            <td>{{ history.quantity }}</td>
+            <td>{{ history.total_price }}</td>
+            <td>{{ history.issued_by }}</td> 
+            <td>{{ history.received_by }}</td>
+            <td>{{ history.timestamp }}</td>
+        </tr>
+    {% endfor %}
+</table>

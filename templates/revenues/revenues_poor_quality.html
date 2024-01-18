@@ -1,0 +1,212 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Revenues{% endblock title %}
+{% block content %}
+{% load custom_filters %}
+    <div class="content-header">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">For bad quality of pineapples</h3>
+        
+                <div class="card-tools">
+                    <a href="{% url 'harvest_revenues' %}">
+                        <button type="button" class="btn btn-tool">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </a>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="chart">
+                    <canvas id="revenuesbarChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+                </div>
+                <br>
+                <div class="container-fluid">
+                    <div class="row mb-2">
+                        <!-- <table class="table table-bordered table-hover">
+                            <thead>
+                                <tr class="bg-secondary">
+                                    <th>Year</th>
+                                    <th>Variety</th>
+                                    <th>Total Value</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for year, harvesteds_by_year in harvested_bad_by_year.items %}
+                                    {% for harv_bad in harvesteds_by_year %}
+                                        <tr>
+                                            {% if forloop.first %}
+                                                <td rowspan="{{ harvesteds_by_year|length }}">{{ year }}</td>
+                                            {% endif %}
+                                            <td>{{ harv_bad.category }}</td>
+                                            <td>Php. {{ harv_bad.total|format_number }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                {% endfor %}
+                            </tbody>
+                        </table> -->
+                        <table class="table table-hover table-bordered dataTable no-footer" id="sampleTable" role="grid" aria-describedby="sampleTable_info">
+                            <thead>
+                                <tr role="row" class="bg-secondary">
+                                    <!-- <th class="sorting_asc" tabindex="0" aria-controls="sampleTable" rowspan="1" colspan="1"  style="width: 102.141px;">Year</th> -->
+                                    <th class="sorting" tabindex="0" aria-controls="sampleTable" rowspan="1" colspan="1"  style="width: 102.141px;">Variety</th>
+                                    <th class="sorting" tabindex="0" aria-controls="sampleTable" rowspan="1" colspan="1"  style="width: 102.141px;">Total Value</th>
+                                    <th class="sorting" tabindex="0" aria-controls="sampleTable" rowspan="1" colspan="1"  style="width: 102.141px;">Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                              {% for year, harvesteds_by_year in harvested_bad_by_year.items %}
+                              {% for harv_bad in harvesteds_by_year %}
+                                    <tr role="row" class="odd">
+                                        <!-- {% if forloop.first %}
+                                        <td class="sorting_1" rowspan="{{ harvesteds_by_year|length }}">{{ year }}</td>
+                                        {% endif %} -->
+                                        <td>{{ harv_bad.category }}</td>
+                                        <td>{{ harv_bad.total|format_number }}</td>
+                                        <td>{{ harv_bad.date }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                            
+        
+                    </div>
+                </div>
+            </div>
+            <!-- /.card-body -->
+        </div>
+        
+        <!-- <canvas id="lineChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas> -->
+    </div>
+    <script>
+        function updateChart() {
+    // Make an AJAX request to get updated data
+    $.ajax({
+        url: '/get_revenue_chart_data/',  // Update this to match your actual URL
+        method: 'GET',
+        dataType: 'json',
+        success: function (data) {
+            // Update chart data
+            barChart.data.labels = data.years;
+            barChart.data.datasets[0].data = data.harvested_bad_data;
+    
+            // Update the chart
+            barChart.update();
+        },
+        error: function (error) {
+            console.error('Error fetching data:', error);
+        }
+    });
+    
+    // Make an additional AJAX request to get totals_by_year
+    $.ajax({
+        url: '/get_totals_by_year/',  // Replace with the actual URL for totals_by_year
+        method: 'GET',
+        dataType: 'json',
+        success: function (totalsData) {
+            // Use totals_by_year data to update the display
+            // For example, you can log the data to the console
+            console.log('Totals by Year:', totalsData);
+    
+            // Assuming barChart is defined globally, you can update the chart with totals_by_year data
+            barChart.data.datasets[4].data = totalsData.harvested_good_data;
+            barChart.data.datasets[5].data = totalsData.harvested_bad_data;
+            barChart.data.datasets[6].data = totalsData.harvested_rejected_data;
+    
+            // Update the chart with totals_by_year data
+            barChart.update();
+        },
+        error: function (error) {
+            console.error('Error fetching totals_by_year data:', error);
+        }
+    });
+    }
+    
+        var barChartCanvas = $('#revenuesbarChart').get(0).getContext('2d');
+    
+        var barChartData = {
+            labels: [
+                {% for year, totals in totals_by_year.items %}
+                    '{{ year }}',
+                {% endfor %}
+            ],
+            datasets: [
+                {
+                    label: 'Low Quality Pineaples',
+                    backgroundColor: 'rgba(108, 117, 125, 0.7)',
+                    borderColor: 'rgba(108, 117, 125, 0.7)',
+                    data: [
+                        {% for year, totals in totals_by_year.items %}
+                            {{ totals.harvested_bad_total }},
+                        {% endfor %}
+                    ]
+                },
+            ]
+        };
+    
+        var barChart = new Chart(barChartCanvas, {
+            type: 'bar',
+            data: barChartData,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'top'
+                    },
+                    title: {
+                        display: true,
+                        text: 'Yearly Totals'
+                    }
+                }
+            }
+        });
+    
+        // Update the chart every 5 seconds (adjust the interval as needed)
+        setInterval(updateChart, 1000);  // Change 5000 to the desired interval in milliseconds
+    </script>
+    
+    <script>
+        $(document).ready(function () {
+          // Handle delete button click
+          $(".delete-crop").click(function () {
+            var cropId = $(this).data("crop-id");
+            
+            // When the "Delete" button in the modal is clicked
+            $("#confirmDelete").click(function () {
+              $.ajax({
+                url: "{% url 'bidder_win_list_delete' 0 %}".replace("0", cropId), // Use your URL pattern for crop_delete
+                method: "POST",
+                data: {
+                  csrfmiddlewaretoken: "{{ csrf_token }}",
+                  // Add any other data you need to send here
+                },
+                success: function (response) {
+                  // Handle the success response if needed
+                  // For example, you can remove the deleted row from the table
+                  $("#deleteCropModal").modal("hide"); // Close the modal
+                  // Reload or update the table as needed
+                  // You can use AJAX to update the table without a full page reload
+                  location.reload(); // Reload the page to reflect changes
+                },
+                error: function (error) {
+                  console.error("Error deleting crop:", error);
+                },
+              });
+            });
+          });
+        });
+      </script>
+{% endblock content %}
+{% block extrascripts %}
+    <script type="text/javascript" src="{% static 'js/plugins/jquery.dataTables.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/plugins/dataTables.bootstrap.min.js' %}"></script>
+    <script type="text/javascript">$('#sampleTable').DataTable();</script>
+{% endblock extrascripts %}

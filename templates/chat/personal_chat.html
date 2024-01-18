@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-8">
+            <div id="chat-messages">
+                {% for message in messages %}
+                <div class="message-container {% if message.user.username == request.user.username %}sender{% else %}receiver{% endif %}">
+                    {% if message.user.username != request.user.username %}
+                    <p class="font-weight-bold">{{ message.user.username }}</p>
+                    {% endif %}
+                    <div class="message-content rounded p-3 mb-3">
+                        <p>{{ message.content }}</p>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="col-md-4">
+            <!-- Sidebar or additional information here -->
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-8">
+            <form id="chat-form">
+                <input type="text" id="chat-message-input" placeholder="Type your message..." required>
+                <button type="submit" id="chat-message-submit">Send</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    // JavaScript code for WebSocket communication
+</script>
+{% endblock %}

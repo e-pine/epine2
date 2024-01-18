@@ -1,0 +1,72 @@
+{% load custom_filters %}
+<div class="card">
+    <a href="{% url 'crop_expense' %}" class="card-success">
+      <div class="card-header">
+        <h3 class="card-title">Other Expenses</h3>
+  
+        <div class="card-tools">
+          <button type="button" class="btn btn-tool" data-card-widget="collapse">
+            <i class="fas fa-minus"></i>
+          </button>
+          <button type="button" class="btn btn-tool" data-card-widget="remove">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+      </div>
+    </a>
+    <div class="card-body">
+      <table class="table table-bordered table-hover">
+        <thead>
+            <tr class="bg-light">
+                <th>Name</th>
+                <th>Price Pay</th>
+                <th>Workers</th>
+                <th>Day</th>
+                <th>Date</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for year, expenses in worker_expenses_by_year.items %}
+                {% for expense in expenses %}
+                    <tr class="data-row-work-expense">
+                        <td>{{ expense.name }}</td>
+                        <td>Php. {{ expense.price_pay|format_number }}</td>
+                        <td>{{ expense.workers }}</td>
+                        <td>{{ expense.days }}</td>
+                        <td>{{ expense.date }}</td>
+                        <td>Php. {{ expense.total|format_number|default:"N/A" }}</td>
+                    </tr>
+                {% endfor %}
+            {% endfor %}
+        </tbody>
+    </table>
+    <div class="float-right p-2">
+        <a class="btn btn-outline-secondary" data-toggle="modal" data-target="#workexpenseModal">Add</a>
+      <button id="see-more-work-expense" class="btn btn-outline-primary">See More</button>
+    </div>
+    </div>
+    <!-- /.card-body -->
+  </div>
+              <!-- work expense modal -->
+              <div class="modal fade" id="workexpenseModal" tabindex="-1" role="dialog" aria-labelledby="workexpenseModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                  <div class="modal-content">
+                    <div class="modal-header bg-secondary">
+                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                      </button>
+                    </div>
+                    <div class="modal-body">
+                      <form method="POST">
+                        {% csrf_token %}
+                        <div class="col-12 mb-4">{{form}}</div>
+                        <div class="col-12 mb-4">
+                          <button type="submit" class="btn btn-secondary btn-block">Add</button>
+                        </div>
+                    </form> 
+                    </div>
+                  </div>
+                </div>
+              </div>
+              

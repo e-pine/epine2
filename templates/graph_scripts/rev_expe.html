@@ -1,0 +1,48 @@
+<script>
+    const yearlyPieChartCanvas = document.getElementById('yearlyPieChart2').getContext('2d');
+    let yearlyPieChart;
+
+    const getYearlyPieChartData = (yearIndex) => {
+        // Your existing code for calculating pie chart data
+    };
+
+    const drawYearlyPieChart = (yearIndex) => {
+        const newPieChartData = getYearlyPieChartData(yearIndex);
+
+        if (yearlyPieChart) {
+            yearlyPieChart.destroy();
+        }
+
+        yearlyPieChart = new Chart(yearlyPieChartCanvas, {
+            type: 'pie',
+            data: newPieChartData,
+            options: {
+                responsive: true,
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.label + ': ' + context.parsed.toFixed(0) + '%';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        document.getElementById('currentYearLabel2').innerText = 'Year: ' + roiYears[currentYearIndex];
+        updateYearlyDataTable2(yearIndex);
+    };
+
+    const nextYear2 = () => {
+        currentYearIndex = (currentYearIndex + 1) % roiYears.length;
+        drawYearlyPieChart(currentYearIndex);
+    };
+
+    const updateYearlyDataTable2 = (yearIndex) => {
+        // Your existing code for updating the data table
+    };
+
+    // Initial chart draw
+    drawYearlyPieChart(currentYearIndex);
+</script>

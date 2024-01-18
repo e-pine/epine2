@@ -1,0 +1,899 @@
+{% extends 'base.html' %}
+{% block title %}Crop{% endblock title %}
+{% block content %}
+{% load custom_filters %}
+<style>
+    #hide-card{
+        display: none;
+    }
+</style>
+<br>
+  <section class="content">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-md-3">
+            <div class="card">
+                <div class="r card-header d-flex justify-content-center align-items-center">
+                    <h3 class="card-title">Return on Investments</h3>
+                  <div class="card-tools">
+                  </div>
+                </div>
+                <div class="card-body">
+                  <div class="chart">
+                    <canvas id="yearlyRoiPieChart" style="min-height: 235px; height: 235px; max-height: 235px; max-width: 100%;"></canvas>
+                    <p id="currentYearLabel"></p>
+                    
+                  </div>
+                  <table id="yearlyDataTable" class="table">
+                    <!-- <thead>
+                        <tr>
+                            <th>Category</th>
+                            <th>Amount</th>
+                        </tr>
+                    </thead> -->
+                    <!-- <tbody id="yearlyDataBody">
+                      
+                    </tbody> -->
+                    
+                </table>
+                
+                </div>
+                <div class="card-footer" style="height: 60px;">
+                    <p>
+                        <a class="" onclick="harvest_nextYear()" style="float: left;"></a>
+                        <button class="btn btn-outline-secondary" onclick="nextYear()" style="float: right;">Next Year</button><br>
+                    </p>
+                </div>
+                <!-- /.card-body -->
+              </div>
+              
+            <div class="card" id="hide-card">
+                <a href="{% url 'crop_expense' %}" class="card-danger">
+                  <div class="card-header">
+                    <h3 class="card-title">Expenses</h3>
+          
+                    <div class="card-tools">
+                      <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                        <i class="fas fa-minus"></i>
+                      </button>
+                      <button type="button" class="btn btn-tool" data-card-widget="remove">
+                        <i class="fas fa-times"></i>
+                      </button>
+                    </div>
+                  </div>
+                </a>
+                <div class="card-body">
+                  <canvas id="roiChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+                </div>
+   
+              </div>
+              <div class="card" id="hide-card">
+                <a href="{% url 'crop_expense' %}" class="card-danger">
+                  <div class="card-header">
+                    <h3 class="card-title">Sales Trend</h3>
+          
+                    <div class="card-tools">
+                      <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                        <i class="fas fa-minus"></i>
+                      </button>
+                      <button type="button" class="btn btn-tool" data-card-widget="remove">
+                        <i class="fas fa-times"></i>
+                      </button>
+                    </div>
+                  </div>
+                </a>
+                <div class="card-body">
+                  <canvas id="salesbarChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+                </div>
+                <!-- /.card-body -->
+              </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card">
+                <div id="card">
+                    <div class="r card-header d-flex justify-content-center align-items-center" id="">
+                        <h3 class="card-title">Expenses</h3>
+                    </div>
+                    
+                <div class="position-relative">
+                    <canvas id="yearlyExpensesPieChart" style="min-height: 245px; height: 245px; max-height: 245px; max-width: 100%;"></canvas>
+                <br>
+                </div>
+                <br>
+                <div class="card-footer" style="height: 60px;">
+                    <p>
+                        <a class="" onclick="harvest_nextYear()" style="float: left;"></a>
+                        <a class="btn btn-outline-secondary" onclick="nextYear1()" style="float: right;">Next Year</a>
+                    </p>
+                </div>
+                </div>
+                
+                <!-- /.card-body -->
+            </div>
+            
+          
+            <div class="card" id="hide-card">
+                <a href="{% url 'crop_expense' %}" class="card-danger">
+                  <div class="card-header">
+                    <h3 class="card-title">Revenues</h3>
+          
+                    <div class="card-tools">
+                      <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                        <i class="fas fa-minus"></i>
+                      </button>
+                      <button type="button" class="btn btn-tool" data-card-widget="remove">
+                        <i class="fas fa-times"></i>
+                      </button>
+                    </div>
+                  </div>
+                </a>
+                <div class="card-body">
+                  <canvas id="revenuesbarChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+                </div>
+                <!-- /.card-body -->
+              </div>
+              <div class="card" id="hide-card">
+                <a href="{% url 'crop_expense' %}" class="card-danger">
+                  <div class="card-header">
+                    <h3 class="card-title">REV EXPE</h3>
+          
+                    <div class="card-tools">
+                      <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                        <i class="fas fa-minus"></i>
+                      </button>
+                      <button type="button" class="btn btn-tool" data-card-widget="remove">
+                        <i class="fas fa-times"></i>
+                      </button>
+                    </div>
+                  </div>
+                </a>
+                <div class="card-body" id="hide-card">
+                  <canvas id="yearlyPieChart2" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+                  <div>
+                    <p id="currentYearLabel2"></p>
+                </div>
+                <table class="table table-bordered table-hover">
+                    <thead>
+                        <tr class="bg-success">
+                            <th>Category</th>
+                            <th>Percentage</th>
+                        </tr>
+                    </thead>
+                    <tbody id="yearlyTableBody2">
+                        <!-- Table content will be updated dynamically -->
+                    </tbody>
+                </table>
+                <button onclick="nextYear2()">Next Year</button>
+                <!-- /.card-body -->
+              </div>
+              </div>
+      </div>
+      <style>
+        .r {
+          height: 50px; /* Adjust the height as needed */
+         
+        
+          align-items: center;
+        }
+      </style>
+      <div class="col-md-3">
+        <div class="card">
+            <div id="setAContainer">
+                <div class="r card-header d-flex justify-content-center align-items-center" id="">
+                    <h3 class="card-title">Harvested Crop</h3>
+                </div>
+                
+            <div class="position-relative">
+                <canvas id="harvestedMixedPieChart" style="min-height: 240px; height: 240px; max-height: 240px; max-width: 100%;"></canvas>
+                <a class="btn" id="leftNextButton" onclick="toggleDiv('left')" style="float: left;"><i class='fas fa-angle-left'></i></a>
+                <a class="btn" id="rightNextButton" onclick="toggleDiv('right')" style="float: right;"><i class='fas fa-angle-right'></i></a>
+            </div>
+            <br>
+            <br>
+            <div class="card-footer" style="height: 60px;">
+                <p>
+                    <a class="" onclick="harvest_nextYear()" style="float: left;"></a>
+                    <a class="btn btn-outline-secondary" onclick="harvest_nextYear()" style="float: right;">Next Year</a>
+                </p>
+            </div>
+            </div>
+        
+        <div id="setBContainer" style="display: none;">
+            <div class="r card-header d-flex justify-content-center align-items-center" id="">
+                <h3 class="card-title">Harvested Crop</h3>
+            </div>
+            <div class="position-relative">
+                <canvas id="harvestedMixedPieChart1" style="min-height: 240px; height: 240px; max-height: 240px; max-width: 100%;"></canvas>
+                <a class="btn" id="leftNextButton" onclick="toggleDiv('left')"><i class='fas fa-angle-left'></i></a>
+                <a class="btn" id="leftNextButton" onclick="toggleDiv('left')" style="float: right;"><i class='fas fa-angle-right'></i></a>
+            </div>
+            <br>
+            <div class="card-footer" style="height: 60px;">
+                <p>
+                    <a class="" onclick="harvest_nextYear()" style="float: left;"></a>
+                    <a class="btn btn-outline-secondary" onclick="harvest_nextYear1()" style="float: right;">Next Year</a>
+                </p>
+            </div>
+           
+        </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card">
+            <div id="revenues_setAContainer">
+                <div class="r card-header d-flex justify-content-center align-items-center" id="">
+                    <h3 class="card-title">Harvested Revenues</h3>
+                </div>
+                <div class="position-relative">
+                    <canvas id="revenues_harvestedMixedPieChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+                    <a class="btn" id="leftNextButton" onclick="revenues_toggleDiv('left')"><i class='fas fa-angle-left'></i></a>
+                    <a class="btn" id="leftNextButton" onclick="revenues_toggleDiv('left')" style="float: right;"><i class='fas fa-angle-right'></i></a>
+                </div>
+                <div class="card-footer" style="height: 60px;">
+                    <p>
+                        <a class="" onclick="harvest_nextYear()" style="float: left;"></a>
+                        <a class="btn btn-outline-secondary" onclick="revenues_harvest_nextYear()" style="float: right;">Next Year</a>
+                    </p>
+                </div>
+            </div>
+            <div id="revenues_setBContainer" style="display: none;">
+                <div class="r card-header d-flex justify-content-center align-items-center" id="">
+                    <h3 class="card-title">Harvested Revenues</h3>
+                </div>
+                <div class="position-relative">
+                    <canvas id="revenues_harvestedMixedPieChart1" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+                    <a class="btn" id="leftNextButton" onclick="revenues_toggleDiv('left')"><i class='fas fa-angle-left'></i></a>
+                    <a class="btn" id="leftNextButton" onclick="revenues_toggleDiv('left')" style="float: right;"><i class='fas fa-angle-right'></i></a>
+                </div>
+                <div class="card-footer" style="height: 60px;">
+                    <p>
+                        <a class="" onclick="harvest_nextYear()" style="float: left;"></a>
+                        <a class="btn btn-outline-secondary" onclick="revenues_harvest_nextYear1()" style="float: right;">Next Year</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let currentContainer = 1;
+
+        function toggleDiv(direction) {
+            if (direction === 'left') {
+                currentContainer = currentContainer === 1 ? 2 : 1;
+            } else if (direction === 'right') {
+                currentContainer = currentContainer === 1 ? 2 : 1;
+            }
+
+            $('#setAContainer').toggle(currentContainer === 1);
+            $('#setBContainer').toggle(currentContainer === 2);
+        }
+
+        let revenues_currentContainer = 1;
+
+        function revenues_toggleDiv(direction) {
+            if (direction === 'left') {
+                revenues_currentContainer = revenues_currentContainer === 1 ? 2 : 1;
+            } else if (direction === 'right') {
+                revenues_currentContainer = revenues_currentContainer === 1 ? 2 : 1;
+            }
+
+            $('#revenues_setAContainer').toggle(revenues_currentContainer === 1);
+            $('#revenues_setBContainer').toggle(revenues_currentContainer === 2);
+
+        }
+
+        
+    </script>
+    </div>
+    <table class="table mt-3">
+        <thead>
+            <tr>
+                <th></th>
+                {% for entry in crop_yearly_totals %}
+                    <th>{{ entry.year }}</th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            <tr class="bg-secondary" style="height: 10px;">
+              <td><strong>Cost Investment Summary</strong></td>
+              {% for entry in crop_yearly_totals %}
+                    <td></td>
+                {% endfor %}
+            </tr>
+            <tr>
+                <td>Planting</td>
+                {% for entry in crop_yearly_totals %}
+                    <td>₱ {{ entry.total|format_number|default:"N/A" }}</td>
+                {% endfor %}
+            </tr>
+            <tr>
+                <td>Workers Expense</td>
+                {% for entry in work_yearly_totals %}
+                    <td>₱ {{ entry.total|format_number|default:"N/A" }}</td>
+                {% endfor %}
+            </tr>
+            <tr>
+                <td>Fertilizer/Pesticide</td>
+                {% for entry in ferpes_yearly_totals %}
+                    <td>₱ {{ entry.total|format_number|default:"N/A" }}</td>
+                {% endfor %}
+            </tr>
+            <tr>
+                <td><strong>Total</strong></td>
+                {% for entry in total_expense_yearly %}
+                    <td><strong>₱ {{ entry.total|format_number|default:"N/A" }}</strong></td>
+                {% endfor %}
+            </tr>
+        </tbody>
+        <tbody>
+            <tr class="bg-secondary" style="height: 10px;">
+              <td><strong>Sales Revenues</strong></td>
+              {% for entry in crop_yearly_totals %}
+                    <td></td>
+                {% endfor %}
+            </tr>
+        </tbody>
+        <tr>
+            <td><a class="text-dark" href="{% url 'revenues_goodquality' %}">Good Quality</a></td>
+            {% for year, totals in totals_by_year.items %}
+            <td>₱
+                {% if totals.revenues_harvested_good_total|isnumeric %}
+                {{ totals.revenues_harvested_good_total|format_number }}
+                {% else %}
+                {{ totals.revenues_harvested_good_total|default:"N/A" }}
+                {% endif %}
+            </td>
+            {% endfor %}
+        </tr>
+        <tr>
+            <td><a class="text-dark" href="{% url 'revenues_badquality' %}">Poor Quality</a></td>
+            {% for year, totals in totals_by_year.items %}
+            <td>₱
+                {% if totals.revenues_harvested_bad_total|isnumeric %}
+                {{ totals.revenues_harvested_bad_total|format_number }}
+                {% else %}
+                {{ totals.revenues_harvested_bad_total|default:"N/A" }}
+                {% endif %}
+            </td>
+            {% endfor %}
+        </tr>
+        <tr>
+            <td><a class="text-dark" href="{% url 'revenues_rejected' %}">Rejected</a></td>
+            {% for year, totals in totals_by_year.items %}
+            <td>₱
+                {% if totals.revenues_harvested_rejected_total|isnumeric %}
+                {{ totals.revenues_harvested_rejected_total|format_number }}
+                {% else %}
+                {{ totals.revenues_harvested_rejected_total|default:"N/A" }}
+                {% endif %}
+            </td>
+            {% endfor %}
+        </tr>
+        <tr>
+            <td><strong>Total</strong></td>
+            {% for year, totals in totals_by_year.items %}
+            <td>
+                <strong>₱
+                    {% if totals.revenues_grand_total|isnumeric %}
+                    {{ totals.revenues_grand_total|format_number }}
+                    {% else %}
+                    {{ totals.revenues_grand_total|default:"N/A" }}
+                    {% endif %}
+                </strong>
+            </td>
+            {% endfor %}
+        </tr>
+        <tbody>
+            <tr class="bg-secondary" style="height: 10px;">
+              <td><strong>Return on Investment</strong></td>
+              {% for entry in crop_yearly_totals %}
+                    <td></td>
+                {% endfor %}
+            </tr>
+            <tr>
+                <td>ROI</td>
+                <!-- {% for year, roi in roi_values.items %}
+                    <td>{{ roi|floatformat:2 }} %</td>
+                {% endfor %} -->
+                {% for year, difference in overall.items %}
+                    <td>₱ {{ difference|format_number|default:"0" }}</td>
+                {% endfor %}
+            </tr>
+        </tbody>
+      </table>
+
+
+    <!-- <div class="card">
+        <a href="{% url 'harvest_list' %}" class="card-info">
+          <div class="card-header">
+            <h3 class="card-title">Harvested Crop</h3>
+
+            <div class="card-tools">
+              <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                <i class="fas fa-minus"></i>
+              </button>
+              <button type="button" class="btn btn-tool" data-card-widget="remove">
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
+          </div>
+        </a>
+        <div class="card-body">
+          <div class="chart">
+            <canvas id="barChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+          </div>
+        </div>
+      
+      </div> -->
+</section>
+<!-- <section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <h4>Yearly Total Expenses</h4>
+            <table class="table table-bordered table-hover">
+                <thead>
+                    <tr class="bg-secondary">
+                        <th>Year</th>
+                        <th>Total Expenses</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for entry in total_expense_yearly %}
+                        <tr>
+                            <td>{{ entry.year }}</td>
+                            <td>Php. {{ entry.total|format_number|default:"N/A" }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <h4>Yearly Total Revenues</h4>
+            <table class="table table-bordered table-hover">
+                <thead>
+                    <tr class="bg-info">
+                        <th>Year</th>
+                        <th>Total Revenues</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for year, totals in totals_by_year.items %}
+                            <tr>
+                                <td>{{ year }}</td>
+                                <td>Php. 
+                                    {% if totals.grand_total|isnumeric %}
+                                        {{ totals.grand_total|format_number }}
+                                    {% else %}
+                                        {{ totals.grand_total|default:"N/A" }}
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+
+                </tbody>
+            </table>
+
+
+
+
+        </div>
+    </div>
+</section> -->
+{% include 'graph_scripts/roi.html' %}
+{% include 'graph_scripts/rev_expe.html' %}
+{% include 'graph_scripts/rev_scripts.html' %}
+{% include 'graph_scripts/trend_scripts.html' %}
+{% include 'graph_scripts/pie_expe_scripts.html' %}
+{% include 'graph_scripts/setA_scripts.html' %}
+{% include 'graph_scripts/setB_scripts.html' %}
+{% include 'graph_scripts/revenues_setA_scripts.html' %}
+{% include 'graph_scripts/revenues_setB_scripts.html' %}
+
+<script>
+    // Access the canvas element
+    var barChartCanvas = $('#barChart').get(0).getContext('2d');
+  
+    // Extract the year labels and differences from the 'overall' dictionary
+    var years = [];
+    var differences = [];
+    {% for year, difference in overall.items %}
+      years.push('{{ year }}');
+      differences.push('{{ difference|default:"0" }}');
+    {% endfor %}
+  
+    // Define the bar chart data
+    var barChartData = {
+      labels: years,
+      datasets: [
+        {
+          label: 'Sales',
+          backgroundColor: 'rgba(44, 80, 241, 0.427)',
+          borderColor: 'rgba(44, 80, 241, 0.427)',
+          data: differences,
+        }
+      ]
+    };
+  
+    // Create the bar chart
+    var barChart = new Chart(barChartCanvas, {
+      type: 'bar',
+      data: barChartData,
+      options: {
+        responsive: true,
+        scales: {
+          y: {
+            beginAtZero: true
+          }
+        }
+      }
+    });
+</script>
+
+<script>
+    // Access the canvas element
+    var expenseChartCanvas = $('#expenseChart').get(0).getContext('2d');
+
+    // Extract the data for the pie chart
+    var years = Object.keys(totals_by_year);
+    var grandTotals = years.map(function(year) {
+        return totals_by_year[year]['grand_total'];
+    });
+
+    var totalExpenses = years.map(function(year) {
+        return next((entry['total'] for entry in total_expense_yearly if entry['year'] == year), 0);
+    });
+
+    var roiValues = years.map(function(year) {
+        var totalExpense = next((entry['total'] for entry in total_expense_yearly if entry['year'] == year), 0);
+        return ((totals_by_year[year]['grand_total'] - totalExpense) / totalExpense * 100) || 0;
+    });
+
+    // Define the pie chart data
+    var expenseChartData = {
+        labels: years,
+        datasets: [
+            {
+                label: 'Grand Total',
+                backgroundColor: 'rgba(255, 99, 132, 0.6)',
+                borderColor: 'rgba(255, 99, 132, 1)',
+                borderWidth: 1,
+                data: grandTotals,
+            },
+            {
+                label: 'Total Expense',
+                backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1,
+                data: totalExpenses,
+            },
+            {
+                label: 'ROI',
+                backgroundColor: 'rgba(255, 206, 86, 0.6)',
+                borderColor: 'rgba(255, 206, 86, 1)',
+                borderWidth: 1,
+                data: roiValues,
+            },
+        ]
+    };
+
+    // Create the pie chart for expenses
+    var expenseChart = new Chart(expenseChartCanvas, {
+        type: 'pie',
+        data: expenseChartData,
+        options: {
+            responsive: true,
+            plugins: {
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return context.dataset.label + ': ' + context.parsed + (context.dataset.label === 'ROI' ? '%' : '');
+                        }
+                    }
+                }
+            }
+        }
+    });
+</script>
+
+
+<!-- Add a canvas element for the ROI chart -->
+
+<script>
+  var barChartCanvas = $('#cropBarChart').get(0).getContext('2d');
+
+  var barChartData = {
+      labels: [
+          {% for crop_data in crops %}
+              '{{ crop_data.plant_date|date:"F Y" }}', // Format as 'Month Year'
+          {% endfor %}
+      ],
+      datasets: [
+          {
+              label: 'Hawaii Yield',
+              backgroundColor: 'rgba(60,141,188,0.9)',
+              borderColor: 'rgba(60,141,188,0.8)',
+              data: [
+                  {% for crop_data in crops %}
+                      {% if crop_data.category.name == 'Hawaii' %}
+                          {{ crop_data.total_planted }},
+                      {% else %}
+                          0, // Set 0 for non-Hawaii data
+                      {% endif %}
+                  {% endfor %}
+              ]
+          },
+          {
+              label: 'Pormosa Yield',
+              backgroundColor: 'rgba(1, 222, 214, 210)',
+              borderColor: 'rgba(1, 222, 214, 210)',
+              data: [
+                  {% for crop_data in crops %}
+                      {% if crop_data.category.name == 'Pormosa' %}
+                          {{ crop_data.number_planted }},
+                      {% else %}
+                          0, // Set 0 for non-Pormosa data
+                      {% endif %}
+                  {% endfor %}
+              ]
+          }
+      ]
+  };
+
+  var barChart = new Chart(barChartCanvas, {
+      type: 'bar',
+      data: barChartData,
+      options: {
+          scales: {
+              x: {
+                  stacked: true,
+              },
+              y: {
+                  stacked: true,
+              },
+          },
+          // Customize other chart options here
+      }
+  });
+</script>
+
+
+  <script>
+    var expenseBarChartCanvas = $('#expenseBarChart').get(0).getContext('2d');
+  
+    // Replace this data with actual data from your Django application
+    var expensesByYear = {
+        {% for entry in total_expense_yearly %}
+            {{ entry.year }}: {{ entry.total }},
+        {% endfor %}
+    };
+  
+    // Extract years and total expenses from the data
+    var years = Object.keys(expensesByYear);
+    var totalExpenses = Object.values(expensesByYear);
+  
+    var expenseBarData = {
+        labels: years,
+        datasets: [
+            {
+                label: 'Expenses',
+                data: totalExpenses,
+                backgroundColor: 'rgba(255, 0, 0, 0.7)',
+                borderColor: 'rgba(255, 0, 0, 0.7)',
+                borderWidth: 1
+            }
+        ]
+    };
+  
+    var expenseBarChart = new Chart(expenseBarChartCanvas, {
+        type: 'bar',
+        data: expenseBarData,
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+  </script>
+
+<script>
+    // Access the canvas element
+    var roiChartCanvas = $('#roiChart').get(0).getContext('2d');
+  
+    // Extract the year labels and ROI values from the 'roi_values' dictionary
+    var roiYears = [];
+    var roiValues = [];
+    {% for year, roi_value in roi_values.items %}
+        roiYears.push('{{ year }}');
+        roiValues.push('{{ roi_value|floatformat:2 }}');
+    {% endfor %}
+  
+    // Define the pie chart data for ROI
+    var roiChartData = {
+        labels: roiYears,
+        datasets: [
+            {
+                label: '',
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.6)',
+                    'rgba(54, 162, 235, 0.6)',
+                    'rgba(255, 206, 86, 0.6)',
+                    'rgba(75, 192, 192, 0.6)',
+                    'rgba(153, 102, 255, 0.6)',
+                    'rgba(255, 159, 64, 0.6)',
+                    // Add more colors as needed
+                ],
+                borderColor: [
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)',
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(153, 102, 255, 1)',
+                    'rgba(255, 159, 64, 1)',
+                    // Add more colors as needed
+                ],
+                borderWidth: 1,
+                data: roiValues,
+            }
+        ]
+    };
+  
+    // Create the pie chart for ROI
+    var roiChart = new Chart(roiChartCanvas, {
+        type: 'pie',
+        data: roiChartData,
+        options: {
+            responsive: true,
+            plugins: {
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return context.label + ': ' + context.parsed + '%'; // Add '%' to tooltip labels
+                        }
+                    }
+                }
+            }
+        }
+    });
+</script>
+<!-- combine------------------------------------------------------------------------------------------------------------ -->
+
+
+<script>
+    // Extract the year labels and values from the 'roi_values' dictionary
+    
+
+    // Replace this data with actual data from your Django application
+    var grandTotals = [
+        {% for year, totals in totals_by_year.items %}
+            {{ totals.grand_total }},
+        {% endfor %}
+    ];
+
+    var totalExpenses = [
+        {% for entry in total_expense_yearly %}
+            {{ entry.total }},
+        {% endfor %}
+    ];
+
+    // Define the combined bar chart data
+    var combinedBarChartData = {
+        labels: roiYears,
+        datasets: [
+            {
+                label: 'Grand Total',
+                backgroundColor: 'rgba(255, 99, 132, 0.6)',
+                borderColor: 'rgba(255, 99, 132, 1)',
+                borderWidth: 1,
+                data: grandTotals,
+            },
+            {
+                label: 'Total Expense',
+                backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1,
+                data: totalExpenses,
+            },
+        ]
+    };
+
+    // Create the combined bar chart
+    var combinedBarChartCanvas = document.getElementById('combinedBarChart').getContext('2d');
+    var combinedBarChart = new Chart(combinedBarChartCanvas, {
+        type: 'bar',
+        data: combinedBarChartData,
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                x: {
+                    stacked: true,
+                },
+                y: {
+                    stacked: true,
+                },
+            },
+            plugins: {
+                legend: {
+                    display: true,
+                    position: 'top'
+                },
+                title: {
+                    display: true,
+                    text: 'Combined Bar Chart'
+                }
+            }
+        }
+    });
+</script>
+
+<script>
+
+    // Replace this data with actual data from your Django application
+    var grandTotals = [
+        {% for year, totals in totals_by_year.items %}
+            {{ totals.grand_total }},
+        {% endfor %}
+    ];
+
+    var totalExpenses = [
+        {% for entry in total_expense_yearly %}
+            {{ entry.total }},
+        {% endfor %}
+    ];
+
+    // Define the combined line chart data
+    var combinedLineChartData = {
+        labels: roiYears,
+        datasets: [
+            {
+                label: 'Grand Total',
+                borderColor: 'rgba(255, 99, 132, 1)',
+                borderWidth: 2,
+                fill: false,
+                data: grandTotals,
+            },
+            {
+                label: 'Total Expense',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 2,
+                fill: false,
+                data: totalExpenses,
+            },
+        ]
+    };
+
+    // Create the combined line chart
+    var combinedLineChartCanvas = document.getElementById('combinedLineChart').getContext('2d');
+    var combinedLineChart = new Chart(combinedLineChartCanvas, {
+        type: 'line',
+        data: combinedLineChartData,
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                x: {
+                    type: 'category',
+                },
+                y: {
+                    beginAtZero: true,
+                },
+            },
+            plugins: {
+                legend: {
+                    display: true,
+                    position: 'top'
+                },
+                title: {
+                    display: true,
+                    text: 'Combined Line Chart'
+                }
+            }
+        }
+    });
+</script>
+
+<!-- sales -->
+
+{% endblock content %}

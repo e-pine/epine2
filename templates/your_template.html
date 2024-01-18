@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Pine Prices</title>
+</head>
+<body>
+    <h1>Pine Prices</h1>
+    <ul>
+        {% for pine_price in pine_prices %}
+            <li>
+                <strong>Category:</strong> {{ pine_price.category }}
+                <br>
+                <strong>Name:</strong> {{ pine_price.name }}
+                <br>
+                <strong>Price:</strong> {{ pine_price.price }}
+            </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

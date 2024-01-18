@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load custom_filters %}
+{% block css %}
+{% endblock css %}
+{% block content %}
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <!-- <h1 class="m-0">List of Event</h1> -->
+         </div>
+      </div><!-- /.container-fluid -->
+    </div>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-9">
+                <div class="card card-warning">
+                    <a href="{% url 'harvest_revenues' %}">
+                        <div class="card-header">
+                            <a href="{% url 'empl-page' %}"><button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                              </button></a>
+                        </div>
+                    </a>
+                    <div class="card-body">
+                        <div class="row justify-content-center">
+                            <div class="col-sm-12">
+                                <div id="sampleTable_wrapper" class="dataTables_wrapper container-fluid dt-bootstrap4 no-footer">
+                                    <div class="row">
+                                        <div class="col-sm-12">
+                                            <table class="table table-hover table-bordered dataTable no-footer" id="" role="grid" aria-describedby="sampleTable_info">
+                                                <thead>
+                                                    <tr role="row">
+                                                        <!-- <th class="sorting_asc" tabindex="0" aria-controls="sampleTable" rowspan="1" colspan="1"  style="width: 102.141px;">No.</th> -->
+                                                        <th style="width: 110.141px;">Event</th>
+                                                        <th style="width: 90.141px;">Variety</th>
+                                                        <th style="width: 130.141px;">Start</th>
+                                                        <th style="width: 10.141px;">Action</th>
+                                                        <th style="width: 20.141px;">Status</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {% for events in event %}
+                                                    {% if events.status == 'Running' %}
+                                                        <tr role="row" class="{% cycle 'odd' 'even' %}">
+                                                            <!-- <td>{{ forloop.counter }}</td> -->
+                                                            <td><a href="{% url 'emp_event' events.id %}">{{ events.name }}</a></td>
+                                                            <td>{{ events.variety }}</td>
+                                                            <td>{{ events.broadcast_on }}</td>
+                                                        
+                                                            <td class=""><a href="{% url 'farm_event_update' events.id %}">Add Details</i></a></td>
+                                                            <td>
+                                                                {% if not events.sent %}
+                                                                    <button class="btn btn-primary" onclick="completeEvent('{{ events.id }}')">Complete</button>
+                                                                {% else %}
+                                                                    {{ events.status }}
+                                                                {% endif %}
+                                                            </td>                                
+                                                        </tr>
+                                                    {% endif %}
+                                                    {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+  
+  </div>
+
+  <script>
+    function completeEvent(eventId) {
+      
+        var url = `/complete_event/${eventId}/`;
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+        })
+        .then(response => {
+            if (response.ok) {
+                location.reload();
+            } else {
+                console.error('Failed to mark event as completed');
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    }
+  </script>
+{% endblock content %}
+{% block extrascripts %}
+    <script type="text/javascript" src="{% static 'js/plugins/jquery.dataTables.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/plugins/dataTables.bootstrap.min.js' %}"></script>
+    <script type="text/javascript">$('#sampleTable').DataTable();</script>
+{% endblock extrascripts %}

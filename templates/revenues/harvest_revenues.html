@@ -1,0 +1,410 @@
+{% extends 'base.html' %}
+{% block title %}Revenues{% endblock title %}
+{% block content %}
+{% load custom_filters %}
+
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+              <div class="col-sm-6">
+                <h3>Revenues</h3>
+             </div>
+             <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                  <li class="breadcrumb-item"><a href="{% url 'revenues_goodquality' %}">High Quality</a></li>
+                  <li class="breadcrumb-item"><a href="{% url 'revenues_badquality' %}">Low Quality</a></li>
+                  <li class="breadcrumb-item"><a href="{% url 'revenues_rejected' %}">Rejected</a></li>
+                </ol>
+              </div>
+          </div><!-- /.container-fluid -->
+          </div>
+        <div class="card">
+            <!-- <div id="setAContainer">
+                <div class="card-header d-flex justify-content-center align-items-center" id="">
+                    <p>
+                        <a class="btn" id="leftNextButton" onclick="toggleDiv('left')"><i class='fas fa-angle-left'></i></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        <h3 class="card-title" id="categoryTitle">Set B</h3>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        <a class="btn" id="leftNextButton" onclick="toggleDiv('left')"><i class='fas fa-angle-right'></i></a>
+                    </p>
+                </div>
+                <div class="position-relative">
+                    <canvas id="harvestedMixedPieChart" style="min-height: 355px; height: 355px; max-height: 355px; max-width: 100%;"></canvas>
+                    
+                </div>
+                <div class="card-footer" style="height: 60px;">
+                    <p>
+                        <a class="btn" onclick="harvest_nextYear()"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        <a href="{% url 'leaderboard_b' %}"></a>&nbsp;&nbsp;&nbsp;&nbsp;
+                        <a class="btn btn-outline-secondary" onclick="harvest_nextYear()">Next Year</a>
+                    </p>
+                </div>
+                </div> -->
+            <div class="card-header">
+        
+                <div class="card-tools">
+                    <!-- <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                        <i class="fas fa-minus"></i>
+                    </button>
+                    <button type="button" class="btn btn-tool" data-card-widget="remove">
+                        <i class="fas fa-times"></i>
+                    </button> -->
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="chart">
+                    <canvas id="revenuesbarChart" style="min-height: 450px; height: 450px; max-height: 450px; max-width: 100%;"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <!-- <canvas id="lineChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas> -->
+
+
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <!-- <h4>Good quality of pineapple</h4>
+                <table class="table table-bordered table-hover">
+                    <thead>
+                        <tr class="bg-success">
+                            <th>Year</th>
+                            <th>Variety</th>
+                            <th>Total Value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for year, bids_by_year in harvested_good_by_year.items %}
+                            {% for bid_win in bids_by_year %}
+                                <tr>
+                                    {% if forloop.first %}
+                                        <td rowspan="{{ bids_by_year|length }}">{{ year }}</td>
+                                    {% endif %}
+                                    <td>{{ bid_win.category }}</td>
+                                    <td>Php. {{ bid_win.total|format_number }}</td>
+                                </tr>
+                            {% endfor %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+        
+                <h4>Bad quality of pineapples</h4>
+                <table class="table table-bordered table-hover">
+                    <thead>
+                        <tr class="bg-secondary">
+                            <th>Year</th>
+                            <th>Variety</th>
+                            <th>Total Value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for year, harvesteds_by_year in harvested_bad_by_year.items %}
+                            {% for harv_bad in harvesteds_by_year %}
+                                <tr>
+                                    {% if forloop.first %}
+                                        <td rowspan="{{ harvesteds_by_year|length }}">{{ year }}</td>
+                                    {% endif %}
+                                    <td>{{ harv_bad.category }}</td>
+                                    <td>Php. {{ harv_bad.total|format_number }}</td>
+                                </tr>
+                            {% endfor %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+                <h4>Rejected pineapples</h4>
+                <table class="table table-bordered table-hover">
+                    <thead>
+                        <tr class="bg-danger">
+                            <th>Year</th>
+                            <th>Variety</th>
+                            <th>Total Value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for year, harvesteds_by_year in rejected_pines_by_year.items %}
+                            {% for harv_bad in harvesteds_by_year %}
+                                <tr>
+                                    {% if forloop.first %}
+                                        <td rowspan="{{ harvesteds_by_year|length }}">{{ year }}</td>
+                                    {% endif %}
+                                    <td>{{ harv_bad.category }}</td>
+                                    <td>Php. {{ harv_bad.total|format_number }}</td>
+                                </tr>
+                            {% endfor %}
+                        {% endfor %}
+                    </tbody>
+                </table> -->
+                <!-- <table class="table mt-3">
+                    <thead>
+                        <th></th>
+                        {% for year, totals in totals_by_year.items %}
+                        <th>{{ year }}</th>
+                        {% endfor %}
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><a class="text-dark" href="{% url 'revenues_goodquality' %}">Good Quality</a></td>
+                            {% for year, totals in totals_by_year.items %}
+                            <td>
+                                {% if totals.harvested_good_total|isnumeric %}
+                                {{ totals.harvested_good_total|format_number }}
+                                {% else %}
+                                {{ totals.harvested_good_total|default:"N/A" }}
+                                {% endif %}
+                            </td>
+                            {% endfor %}
+                        </tr>
+                        <tr>
+                            <td><a class="text-dark" href="{% url 'revenues_badquality' %}">Poor Quality</a></td>
+                            {% for year, totals in totals_by_year.items %}
+                            <td>
+                                {% if totals.harvested_bad_total|isnumeric %}
+                                {{ totals.harvested_bad_total|format_number }}
+                                {% else %}
+                                {{ totals.harvested_bad_total|default:"N/A" }}
+                                {% endif %}
+                            </td>
+                            {% endfor %}
+                        </tr>
+                        <tr>
+                            <td><a class="text-dark" href="{% url 'revenues_rejected' %}">Rejected</a></td>
+                            {% for year, totals in totals_by_year.items %}
+                            <td>
+                                {% if totals.harvested_rejected_total|isnumeric %}
+                                {{ totals.harvested_rejected_total|format_number }}
+                                {% else %}
+                                {{ totals.harvested_rejected_total|default:"N/A" }}
+                                {% endif %}
+                            </td>
+                            {% endfor %}
+                        </tr>
+                        <tr>
+                            <td><strong>Total</strong></td>
+                            {% for year, totals in totals_by_year.items %}
+                            <td>
+                                <strong>₱
+                                    {% if totals.grand_total|isnumeric %}
+                                    {{ totals.grand_total|format_number }}
+                                    {% else %}
+                                    {{ totals.grand_total|default:"N/A" }}
+                                    {% endif %}
+                                </strong>
+                            </td>
+                            {% endfor %}
+                        </tr>
+                        
+                    </tbody>
+                </table> -->
+                    
+<!--         
+                <h4>Totals by Year</h4>
+                <table class="table table-bordered table-hover">
+                    <thead>
+                        <tr class="bg-info">
+                            <th>Year</th>
+                            <th>Total Good Quality Value</th>
+                            <th>Total Bad Quality Value</th>
+                            <th>Grand Total Value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for year, totals in totals_by_year.items %}
+                                <tr>
+                                    <td>{{ year }}</td>
+                                    <td> Php.
+                                        {% if totals.harvested_good_total|isnumeric %}
+                                            {{ totals.harvested_good_total|format_number }}
+                                        {% else %}
+                                            {{ totals.harvested_good_total|default:"N/A" }}
+                                        {% endif %}
+                                    </td>
+                                    <td> Php.
+                                        {% if totals.harvested_bad_total|isnumeric %}
+                                            {{ totals.harvested_bad_total|format_number }}
+                                        {% else %}
+                                            {{ totals.harvested_bad_total|default:"N/A" }}
+                                        {% endif %}
+                                    </td>
+                                    <td>Php. 
+                                        {% if totals.grand_total|isnumeric %}
+                                            {{ totals.grand_total|format_number }}
+                                        {% else %}
+                                            {{ totals.grand_total|default:"N/A" }}
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+
+                    </tbody>
+                </table> -->
+            </div>
+        </div>
+        
+        
+    </div>
+    
+    {% include 'graph_scripts/revenues_script.html' %}
+    <script>
+        // Get data from Django context for harvested goods
+        var harvestedGoodData = [
+            {% for year, bids_by_year in harvested_good_by_year.items %}
+                {% for bid_win in bids_by_year %}
+                    {
+                        year: '{{ year }}',
+                        categoryId: {{ bid_win.category.id }},
+                        categoryName: '{{ bid_win.category.name }}',
+                        totalBuyPine: {{ bid_win.total|default:0 }},
+                        date: '{{ bid_win.date }}',
+                    },
+                {% endfor %}
+            {% endfor %}
+        ];
+    
+        // Get data from Django context for harvested bad
+        var harvestedBadData = [
+            {% for year, harvesteds_by_year in harvested_bad_by_year.items %}
+                {% for harv_bad in harvesteds_by_year %}
+                    {
+                        year: '{{ year }}',
+                        categoryId: {{ harv_bad.category.id }},
+                        categoryName: '{{ harv_bad.category.name }}',
+                        total: {{ harv_bad.total|default:0 }},
+                    },
+                {% endfor %}
+            {% endfor %}
+        ];
+    
+        // Get data from Django context for rejected pines
+        var rejectedPinesData = [
+            {% for year, harvesteds_by_year in rejected_pines_by_year.items %}
+                {% for harv_rej in harvesteds_by_year %}
+                    {
+                        year: '{{ year }}',
+                        categoryId: {{ harv_rej.category.id }},
+                        categoryName: '{{ harv_rej.category.name }}',
+                        totalNumber: {{ harv_rej.total_number|default:0 }},
+                        date: '{{ harv_rej.date }}',
+                    },
+                {% endfor %}
+            {% endfor %}
+        ];
+    
+        // Merge all data
+        var mergedData = [...harvestedGoodData, ...harvestedBadData, ...rejectedPinesData];
+    
+        // Filter data for the desired category by ID (e.g., 1 for 'Hawaii')
+        var selectedCategoryId = 2;  // Replace with the desired category ID
+    
+        // Get unique years
+        var harvest_uniqueYears = [...new Set(mergedData.map(item => item.year))].sort();
+        
+        // Create datasets for harvested goods, bad, and rejected pines
+        var datasetsByYear = {};
+    
+        harvest_uniqueYears.forEach(year => {
+            var filteredData = mergedData.filter(item => item.categoryId === selectedCategoryId && item.year === year);
+            datasetsByYear[year] = {
+                label: year,
+                data: [filteredData.reduce((acc, item) => acc + (item.totalBuyPine || 0), 0),
+                    filteredData.reduce((acc, item) => acc + (item.total || 0), 0),
+                    filteredData.reduce((acc, item) => acc + (item.totalNumber || 0), 0)],
+                backgroundColor: [
+                    'rgba(40, 167, 69, 0.7)',
+                    'rgba(210, 214, 222, 1)',
+                    'rgba(255, 99, 132, 1)'
+                ],
+                borderColor: [
+                    'rgba(40, 167, 69, 0.7)',
+                    'rgba(210, 214, 222, 1)',
+                    'rgba(255, 99, 132, 1)'
+                ],
+                borderWidth: 2,
+            };
+        });
+    
+        // Initial year index
+        var harvest_currentYearIndex = 0;
+    
+        // Create a pie chart for harvested goods, bad, and rejected pines data
+        var harvestedMixedPieChartCanvas = document.getElementById('harvestedMixedPieChart').getContext('2d');
+        var harvestedMixedPieChart = new Chart(harvestedMixedPieChartCanvas, {
+            type: 'pie',
+            data: {
+                labels: ['Harvested Goods', 'Harvested Bad', 'Rejected Pines'],
+                datasets: [datasetsByYear[harvest_uniqueYears[harvest_currentYearIndex]]]
+            },
+            options: {
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Year: ' + harvest_uniqueYears[harvest_currentYearIndex]
+                    }
+                }
+            }
+        });
+    
+        var categoryTitle = document.getElementById('categoryTitle');
+    
+        function getCategoryName(categoryId) {
+            // Function to get the category name based on the selected category ID
+            var data = [...harvestedGoodData, ...harvestedBadData, ...rejectedPinesData];
+            var categoryItem = data.find(item => item.categoryId === categoryId);
+    
+            return categoryItem ? categoryItem.categoryName : '';
+        }
+    
+        function updateCategoryTitle() {
+            // Use the category name from the filtered data for the current year and selected category
+            var currentCategoryName = getCategoryName(selectedCategoryId);
+            categoryTitle.innerText = 'Variety: ' + currentCategoryName;
+        }
+    
+        // Initial update
+        updateCategoryTitle();
+    
+        function harvest_nextYear() {
+            harvest_currentYearIndex = (harvest_currentYearIndex + 1) % harvest_uniqueYears.length;
+    
+            var newDataset = datasetsByYear[harvest_uniqueYears[harvest_currentYearIndex]];
+            harvestedMixedPieChart.data.datasets = [newDataset];
+            
+            // Use the category name from the filtered data for the current year and selected category
+            var currentCategoryName = getCategoryName(selectedCategoryId);
+            harvestedMixedPieChart.options.plugins.title.text = 'Year: ' + harvest_uniqueYears[harvest_currentYearIndex];
+            
+            harvestedMixedPieChart.update();
+    
+            updateCategoryTitle();
+        }
+    </script>
+    <script>
+        $(document).ready(function () {
+          // Handle delete button click
+          $(".delete-crop").click(function () {
+            var cropId = $(this).data("crop-id");
+            
+            // When the "Delete" button in the modal is clicked
+            $("#confirmDelete").click(function () {
+              $.ajax({
+                url: "{% url 'bidder_win_list_delete' 0 %}".replace("0", cropId), // Use your URL pattern for crop_delete
+                method: "POST",
+                data: {
+                  csrfmiddlewaretoken: "{{ csrf_token }}",
+                  // Add any other data you need to send here
+                },
+                success: function (response) {
+                  // Handle the success response if needed
+                  // For example, you can remove the deleted row from the table
+                  $("#deleteCropModal").modal("hide"); // Close the modal
+                  // Reload or update the table as needed
+                  // You can use AJAX to update the table without a full page reload
+                  location.reload(); // Reload the page to reflect changes
+                },
+                error: function (error) {
+                  console.error("Error deleting crop:", error);
+                },
+              });
+            });
+          });
+        });
+      </script>
+{% endblock content %}

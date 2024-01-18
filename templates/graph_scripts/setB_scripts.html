@@ -1,0 +1,139 @@
+<script>
+    // Get data from Django context for harvested goods
+    var harvestedGoodData1 = [
+        {% for year, bids_by_year in harvested_good_by_year1.items %}
+            {% for bid_win in bids_by_year %}
+                {
+                    year: '{{ year }}',
+                    categoryId: {{ bid_win.category.id }},
+                    categoryName: '{{ bid_win.category.name }}',
+                    totalBuyPine: {{ bid_win.total_buy_pine|default:0 }},
+                    date: '{{ bid_win.date }}',
+                },
+            {% endfor %}
+        {% endfor %}
+    ];
+
+    // Get data from Django context for harvested bad
+    var harvestedBadData1 = [
+        {% for year, harvesteds_by_year in harvested_bad_by_year1.items %}
+            {% for harv_bad in harvesteds_by_year %}
+                {
+                    year: '{{ year }}',
+                    categoryId: {{ harv_bad.category.id }},
+                    categoryName: '{{ harv_bad.category.name }}',
+                    total: {{ harv_bad.total|default:0 }},
+                },
+            {% endfor %}
+        {% endfor %}
+    ];
+
+    // Get data from Django context for rejected pines
+    var rejectedPinesData1 = [
+        {% for year, harvesteds_by_year in rejected_pines_by_year1.items %}
+            {% for harv_rej in harvesteds_by_year %}
+                {
+                    year: '{{ year }}',
+                    categoryId: {{ harv_rej.category.id }},
+                    categoryName: '{{ harv_rej.category.name }}',
+                    totalNumber: {{ harv_rej.total_number|default:0 }},
+                    date: '{{ harv_rej.date }}',
+                },
+            {% endfor %}
+        {% endfor %}
+    ];
+
+    // Merge all data
+    var mergedData1 = [...harvestedGoodData1, ...harvestedBadData1, ...rejectedPinesData1];
+
+    // Filter data for the desired category by ID (e.g., 1 for 'Hawaii')
+    var selectedCategoryId1 = 2;  // Replace with the desired category ID
+
+    // Get unique years
+    var harvest_uniqueYears1 = [...new Set(mergedData1.map(item => item.year))].sort();
+    
+    // Create datasets for harvested goods, bad, and rejected pines
+    var datasetsByYear1 = {};
+
+    harvest_uniqueYears1.forEach(year => {
+        var filteredData1 = mergedData1.filter(item => item.categoryId === selectedCategoryId1 && item.year === year);
+        datasetsByYear1[year] = {
+            label: year,
+            data: [filteredData1.reduce((acc, item) => acc + (item.totalBuyPine || 0), 0),
+                filteredData1.reduce((acc, item) => acc + (item.total || 0), 0),
+                filteredData1.reduce((acc, item) => acc + (item.totalNumber || 0), 0)],
+            backgroundColor: [
+                'rgba(40, 167, 69, 0.7)',
+                'rgba(210, 214, 222, 1)',
+                'rgba(255, 99, 132, 1)'
+            ],
+            borderColor: [
+                'rgba(40, 167, 69, 0.7)',
+                'rgba(210, 214, 222, 1)',
+                'rgba(255, 99, 132, 1)'
+            ],
+            borderWidth: 2,
+        };
+    });
+
+    // Initial year index
+    var harvest_currentYearIndex1 = 0;
+
+    // Create a pie chart for harvested goods, bad, and rejected pines data
+    var harvestedMixedPieChartCanvas1 = document.getElementById('harvestedMixedPieChart1').getContext('2d');
+    var harvestedMixedPieChart1 = new Chart(harvestedMixedPieChartCanvas1, {
+        type: 'pie',
+        data: {
+            labels: ['Set-A', 'Set-B', 'Rejected'],
+            datasets: [datasetsByYear1[harvest_uniqueYears1[harvest_currentYearIndex1]]]
+        },
+        options: {
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Year: ' + harvest_uniqueYears1[harvest_currentYearIndex1] + ' - Variety: ' + getCategoryName1(selectedCategoryId1)
+
+                    // text: 'Year: ' + harvest_uniqueYears1[harvest_currentYearIndex1]
+                }
+            }
+        }
+    });
+    
+
+    var categoryTitle1 = document.getElementById('categoryTitle1');
+
+    function getCategoryName1(categoryId) {
+        // Function to get the category name based on the selected category ID
+        var data1 = [...harvestedGoodData1, ...harvestedBadData1, ...rejectedPinesData1];
+        var categoryItem1 = data1.find(item => item.categoryId === categoryId);
+
+        return categoryItem1 ? categoryItem1.categoryName : '';
+    }
+
+    function updateCategoryTitle1() {
+        // Use the category name from the filtered data for the current year and selected category
+        var currentCategoryName1 = getCategoryName1(selectedCategoryId1);
+        categoryTitle1.innerText = 'Variety: ' + currentCategoryName1;
+    }
+
+    // Initial update
+    updateCategoryTitle1();
+
+    function harvest_nextYear1() {
+        harvest_currentYearIndex1 = (harvest_currentYearIndex1 + 1) % harvest_uniqueYears1.length;
+
+        var newDataset1 = datasetsByYear1[harvest_uniqueYears1[harvest_currentYearIndex1]];
+        harvestedMixedPieChart1.data.datasets = [newDataset1];
+        
+        // Use the category name from the filtered data for the current year and selected category
+        var currentCategoryName1 = getCategoryName1(selectedCategoryId1);
+        harvestedMixedPieChart1.options.plugins.title.text = 'Year: ' + harvest_uniqueYears1[harvest_currentYearIndex1] + ' - Variety: ' + currentCategoryName1;
+        // harvestedMixedPieChart1.options.plugins.title.text = 'Year: ' + harvest_uniqueYears1[harvest_currentYearIndex1];
+        
+        harvestedMixedPieChart1.update();
+
+        updateCategoryTitle1();
+    }
+
+    
+</script>

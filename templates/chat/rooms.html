@@ -1,0 +1,14 @@
+
+        {% for room in rooms %}
+        <div class="col-lg-3 col-6">
+            <div class="small-box bg-warning">
+                <h2 class="mb-5 text-2xl font-semibold  ">
+                    {{room.name}}
+                </h2>
+                <div class="col-12 mb-4">
+                <a href="{% url 'room' room.slug %}" class="btn btn-success btn-block">Message</a>
+            </div>
+            </div>
+        </div>
+        {% endfor %}
+

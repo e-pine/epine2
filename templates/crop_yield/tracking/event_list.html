@@ -1,0 +1,188 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Farm Activities{% endblock title %}
+{% block content %}
+{% load custom_filters %}
+  <div class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm-6">
+          <h3 class="m-0">Farm Activities</h3><h4 style="font-style: italic;">(<strong>Running</strong>)</h4>
+       </div>
+       <div class="col-sm-6">
+        <ol class="breadcrumb float-sm-right">
+          <li class="breadcrumb-item">Running</li>
+          <li class="breadcrumb-item"><a href="{% url 'farm_event_list_completed' %}">Completed</a></li>
+          <li class="breadcrumb-item"><a href="{% url 'farm_event' %}">Event Calendar</a></li>
+        </ol>
+      </div>
+    </div><!-- /.container-fluid -->
+  </div>
+  <br>
+<div class="col-md-12">
+  <div class="tile">
+      <div class="tile-body">
+          <div class="table-responsive">
+              <div id="sampleTable_wrapper" class="dataTables_wrapper container-fluid dt-bootstrap4 no-footer">
+                  <div class="row">
+                      <div class="col-sm-12">
+                        <!-- <table class="table table-hover table-bordered dataTable no-footer" id="sampleTable" role="grid" aria-describedby="sampleTable_info">
+                          <thead>
+                              <tr role="row" class="bg-secondary">
+                                  <th class="sorting_asc" tabindex="0" aria-controls="sampleTable" rowspan="1" colspan="1" style="width: 102.141px;">Event</th>
+                                  <th class="sorting" tabindex="0" aria-controls="sampleTable" rowspan="1" colspan="1" style="width: 102.141px;">Start on</th>
+                                  <th class="sorting" tabindex="0" aria-controls="sampleTable" rowspan="1" colspan="1" style="width: 102.141px;">End on</th>
+                                  <th class="sorting" tabindex="0" aria-controls="sampleTable" rowspan="1" colspan="1" style="width: 102.141px;">Status</th>
+                                  <th class="sorting" tabindex="0" aria-controls="sampleTable" rowspan="1" colspan="1" style="width: 102.141px;"></th>
+                              </tr>
+                          </thead>
+                          <tbody>
+                              {% for events in event %}
+                              <tr role="row" class="{% cycle 'odd' 'even' %}">
+                                  <td>{{ events.name }}</td>
+                                  <td>{{ events.broadcast_on }}</td>
+                                  <td>{{ events.end_on }}</td>
+                                  <td>
+                                    {% if not events.sent %}
+                                        <button class="btn btn-primary" onclick="completeEvent('{{ events.id }}')">Complete</button>
+                                    {% else %}
+                                        {{ events.status }}
+                                    {% endif %}
+                                    {{ events.status }}
+                                </td>         
+                                {% if events.status == 'Running' %}
+                        <td><a href="{% url 'update_farm_event' events.id %}" class="btn btn-primary">Re-schedule</a></td>
+                    {% else %}
+                        <td></td> 
+                    {% endif %}                     
+                              </tr>
+                              {% endfor %}
+                          </tbody>
+                      </table> -->
+                      <table class="table table-hover table-bordered dataTable no-footer" id="sampleTable" role="grid" aria-describedby="sampleTable_info">
+                        <thead>
+                            <tr role="row" class="bg-warning">
+                                <th class="sorting_asc" tabindex="0" aria-controls="sampleTable" rowspan="1" colspan="1" style="width: 102.141px;">Event</th>
+                                <th class="sorting" tabindex="0" aria-controls="sampleTable" rowspan="1" colspan="1" style="width: 102.141px;">Variety</th>
+                                <th class="sorting" tabindex="0" aria-controls="sampleTable" rowspan="1" colspan="1" style="width: 102.141px;">Starting Date</th>
+                                <!-- <th class="sorting" tabindex="0" aria-controls="sampleTable" rowspan="1" colspan="1" style="width: 102.141px;">End</th> -->
+                                <!-- <th class="sorting" tabindex="0" aria-controls="sampleTable" rowspan="1" colspan="1" style="width: 102.141px;">Status</th> -->
+                                <th class="sorting" tabindex="0" aria-controls="sampleTable" rowspan="1" colspan="1" style="width: 102.141px;">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for events in event %}
+                                {% if events.status == 'Running' %}
+                                    <tr role="row" class="{% cycle 'odd' 'even' %}">
+                                        <td>{{ events.name }}</td>
+                                        <td>{{events.variety}}</td>
+                                        <td>{{ events.broadcast_on }}</td>
+                                        <!-- <td>{{ events.end_on }}</td> -->
+                                        <!-- <td>
+                                            {% if not events.sent %}
+                                                <button class="btn btn-primary" onclick="completeEvent('{{ events.id }}')">Complete</button>
+                                            {% else %}
+                                                {{ events.status }}
+                                            {% endif %}
+                                            {{ events.status }}
+                                        </td>          -->
+                                        <td><a href="{% url 'update_farm_event' events.id %}" class="btn btn-primary">Re-schedule</a></td>                       
+                                    </tr>
+                                {% endif %}
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                      <!-- <table class="table table-hover table-bordered dataTable no-footer" id="sampleTable" role="grid" aria-describedby="sampleTable_info">
+                     
+                        <tbody>
+                            {% for variety, events in grouped_events.items %}
+                                <tr>
+                                    <td colspan="6" class="bg-light">{{ variety }}</td>
+                                </tr>
+                                {% for event in events %}
+                                    <tr role="row" class="{% cycle 'odd' 'even' %}">
+                            
+                                        <td>
+                                            {% if event.status == 'Running' %}
+                                                <a href="{% url 'update_farm_event' event.id %}" class="btn btn-primary">Re-schedule</a>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            {% endfor %}
+                        </tbody>
+                    </table> -->
+                  
+          
+         
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </div>
+</div>
+
+</div>
+<script>
+  function completeEvent(eventId) {
+      // Assuming you have an endpoint to mark an event as completed
+      var url = `/complete_event/${eventId}/`;
+      fetch(url, {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json',
+              'X-CSRFToken': '{{ csrf_token }}'
+          },
+      })
+      .then(response => {
+          if (response.ok) {
+              // Reload the page or update the UI as needed
+              location.reload();
+          } else {
+              console.error('Failed to mark event as completed');
+          }
+      })
+      .catch(error => console.error('Error:', error));
+  }
+</script>
+<script>
+  $(document).ready(function () {
+    // Handle delete button click
+    $(".delete-crop").click(function () {
+      var cropId = $(this).data("crop-id");
+      
+      // When the "Delete" button in the modal is clicked
+      $("#confirmDelete").click(function () {
+        $.ajax({
+          url: "{% url 'bidder_win_list_delete' 0 %}".replace("0", cropId), // Use your URL pattern for crop_delete
+          method: "POST",
+          data: {
+            csrfmiddlewaretoken: "{{ csrf_token }}",
+            // Add any other data you need to send here
+          },
+          success: function (response) {
+            // Handle the success response if needed
+            // For example, you can remove the deleted row from the table
+            $("#deleteCropModal").modal("hide"); // Close the modal
+            // Reload or update the table as needed
+            // You can use AJAX to update the table without a full page reload
+            location.reload(); // Reload the page to reflect changes
+          },
+          error: function (error) {
+            console.error("Error deleting crop:", error);
+          },
+        });
+      });
+    });
+  });
+</script>
+
+{% endblock content %}
+
+{% block extrascripts %}
+    <script type="text/javascript" src="{% static 'js/plugins/jquery.dataTables.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/plugins/dataTables.bootstrap.min.js' %}"></script>
+    <script type="text/javascript">$('#sampleTable').DataTable();</script>
+{% endblock extrascripts %}
+

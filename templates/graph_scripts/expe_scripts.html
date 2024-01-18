@@ -1,0 +1,39 @@
+<script>
+    var expenseBarChartCanvas = $('#expenseBarChart').get(0).getContext('2d');
+  
+    // Replace this data with actual data from your Django application
+    var expensesByYear = {
+        {% for entry in total_expense_yearly %}
+            {{ entry.year }}: {{ entry.total }},
+        {% endfor %}
+    };
+  
+    // Extract years and total expenses from the data
+    var years = Object.keys(expensesByYear);
+    var totalExpenses = Object.values(expensesByYear);
+  
+    var expenseBarData = {
+        labels: years,
+        datasets: [
+            {
+                label: 'Expenses',
+                data: totalExpenses,
+                backgroundColor: 'rgba(255, 0, 0, 0.7)',
+                borderColor: 'rgba(255, 0, 0, 0.7)',
+                borderWidth: 1
+            }
+        ]
+    };
+  
+    var expenseBarChart = new Chart(expenseBarChartCanvas, {
+        type: 'bar',
+        data: expenseBarData,
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+  </script>

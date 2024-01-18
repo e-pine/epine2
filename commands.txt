@@ -1,0 +1,320 @@
+celery -A epine beat -l INFO
+
+celery -A epine.celery worker --pool=solo -l info
+
+DELIMITER //
+DROP TRIGGER IF EXISTS after_stockmgmt_stock_update//
+CREATE TRIGGER after_stockmgmt_stock_update AFTER UPDATE ON stockmgmt_stock FOR EACH ROW
+BEGIN
+	IF new.issue_quantity = 0 
+		THEN INSERT INTO stockmgmt_stockhistory(
+			id, 
+			last_updated, 
+			category_id, 
+			item_name, 
+            issue_quantity,
+            issue_by,
+			quantity, 
+			receive_quantity, 
+			receive_by) 
+		VALUES(
+			new.id, 
+			new.last_updated, 
+			new.category_id, 
+			new.item_name, 
+            new.issue_quantity,
+            new.issue_by,
+			new.quantity, 
+			new.receive_quantity, 
+			new.receive_by);
+
+	ELSEIF new.receive_quantity = 0 
+		THEN INSERT INTO stockmgmt_stockhistory(
+			id, 
+			last_updated, 
+			category_id, 
+			item_name, 
+            receive_quantity,
+            receive_by,
+			issue_quantity, 
+			issue_to, 
+			issue_by, 
+			quantity) 
+		VALUES(
+			new.id, 
+			new.last_updated, 
+			new.category_id, 
+			new.item_name, 
+            new.receive_quantity,
+            new.receive_by,
+			new.issue_quantity, 
+			new.issue_to, 
+			new.issue_by, 
+			new.quantity);
+	END IF;
+END//
+DELIMITER ;
+
+views
+@login_required(login_url='login')
+def issue_items(request, pk):
+    queryset = Stock.objects.get(id=pk)
+
+    if request.method == 'POST':
+        form = IssueForm(request.POST, instance=queryset)
+        if form.is_valid():
+            user = request.user
+            instance = form.save(commit=False)
+            instance.issue_by = user.username
+            instance.receive_quantity = 0
+            instance.quantity -= instance.issue_quantity
+            instance.save()
+
+            total_price = instance.issue_quantity * instance.price
+
+            # Create an item history record with the issuing user
+            ItemHistory.objects.create(
+                user=user,
+                item=queryset,
+                quantity=instance.issue_quantity,
+                total_price=total_price,
+                action="Issued",
+                issued_by=user.username,  # Set the issuing user
+            )
+
+            messages.success(request, f"Issued SUCCESSFULLY. {instance.quantity} {instance.item_name} now left in Store")
+
+            return redirect('stock_detail', pk=instance.id)
+
+    else:
+        form = IssueForm(instance=queryset)
+
+    print(f"Issuing User: {user.username}")
+
+    context = {
+        "title": f"Issue {queryset.item_name}",
+        "queryset": queryset,
+        "form": form,
+        "username": f"Issue By: {request.user}",
+    }
+
+    return render(request, "add_items.html", context)
+
+
+@login_required(login_url='login')
+def receive_items(request, pk):
+    queryset = Stock.objects.get(id=pk)
+    form = ReceiveForm(request.POST or None, instance=queryset)
+
+    if form.is_valid():
+        instance = form.save(commit=False)
+        instance.issue_quantity = 0
+        instance.quantity += instance.receive_quantity
+        instance.save()
+
+        total_price = instance.receive_quantity * instance.price
+
+        # Create an item history record with the receiving user
+        ItemHistory.objects.create(
+            user=request.user,
+            item=queryset,
+            quantity=instance.receive_quantity,
+            total_price=total_price,
+            action="Received",
+            received_by=request.user.username,  # Set the receiving user
+        )
+
+        messages.success(request, f"Received SUCCESSFULLY. {instance.quantity} {instance.item_name}s now in Store")
+
+        return redirect('stock_detail', pk=instance.id)
+    
+    print(f"Receiving User: {request.user.username}")
+
+    context = {
+        "title": 'Receive ' + str(queryset.item_name),
+        "instance": queryset,
+        "form": form,
+        "username": 'Receive By: ' + str(request.user),
+    }
+
+    return render(request, "add_items.html", context)
+
+    /--dropping the table--/
+    from django.db import connection
+    table_name = BadPine._meta.db_table
+    with connection.cursor() as cursor:
+    cursor.execute(f"DROP TABLE {table_name}")
+
+'****for line chart graph **
+<script>
+    // Access the canvas element
+    var barChartCanvas = $('#barChart').get(0).getContext('2d');
+  
+    // Extract the year labels and differences from the 'overall' dictionary
+    var years = [];
+    var differences = [];
+    var dynamicColors = [];
+
+    {% for year, difference in overall.items %}
+      years.push('{{ year }}');
+      differences.push('{{ difference|default:"0" }}');
+
+      // Generate a dynamic color for each year
+      var dynamicColor = 'rgba(' + Math.floor(Math.random() * 256) + ',' + Math.floor(Math.random() * 256) + ',' + Math.floor(Math.random() * 256) + ', 0.9)';
+      dynamicColors.push(dynamicColor);
+    {% endfor %}
+  
+    // Define the bar chart data
+    var barChartData = {
+      labels: years,
+      datasets: [
+        {
+          label: 'Overall Difference',
+          backgroundColor: dynamicColors,
+          borderColor: dynamicColors,
+          data: differences,
+        }
+      ]
+    };
+  
+    // Create the bar chart
+    var barChart = new Chart(barChartCanvas, {
+      type: 'bar',
+      data: barChartData,
+      options: {
+        responsive: true,
+        scales: {
+          y: {
+            beginAtZero: true
+          }
+        }
+      }
+    });
+</script>
+
+Expenses------  -----------  -----------------------------------------
+---------------  ---------  ------------------------------------------
+----------------  -------  -------------------------------------------
+-----------------  -----  --------   ------------------------  -------
+------------------  ---  ------   -----------------------   ----------
+<script>
+    var crop_yearly_totals = [
+        {% for entry in crop_yearly_totals %}
+            {
+                year: '{{ entry.year }}',
+                total: {{ entry.total|floatformat|default:"N/A" }},
+            },
+        {% endfor %}
+    ];
+    var currentYearIndex = 0;
+    var yearlyRoiPieChart;
+    var plantingData = [
+        {% for entry in crop_yearly_totals %}
+            {{ entry.total|floatformat|default:"N/A" }},
+        {% endfor %}
+    ];
+
+    var workData = [
+        {% for entry in work_yearly_totals %}
+            {{ entry.total|floatformat|default:"N/A" }},
+        {% endfor %}
+    ];
+
+    var pastAndFertData = [
+        {% for entry in ferpes_yearly_totals %}
+            {{ entry.total|floatformat|default:"N/A" }},
+        {% endfor %}
+    ];
+
+    document.addEventListener('DOMContentLoaded', function() {
+        var yearlyRoiPieChartCanvas = document.getElementById('yearlyExpensesPieChart');
+        if (!yearlyRoiPieChartCanvas) {
+            console.error("Canvas element 'yearlyRoiPieChart' not found.");
+        } else {
+            var yearlyRoiPieChartContext = yearlyRoiPieChartCanvas.getContext('2d');
+            if (!yearlyRoiPieChartContext) {
+                console.error("Could not get context for 'yearlyRoiPieChart'.");
+            } else {
+                // Initialize the chart with the combined data
+                yearlyRoiPieChart = new Chart(yearlyRoiPieChartContext, {
+                    type: 'pie',
+                    data: getYearlyRoiPieChartData(0),
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            tooltip: {
+                                callbacks: {
+                                    label: function (context) {
+                                        return context.label + ': ' + context.parsed.toFixed(0) + '%';
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+
+                // Display the initial year data
+                updateYearlyData(0);
+            }
+        }
+    });
+
+    function getYearlyRoiPieChartData(yearIndex) {
+        var plantingTotal = plantingData[yearIndex] || 0;
+        var workTotal = workData[yearIndex] || 0;
+        var pastAndFertTotal = pastAndFertData[yearIndex] || 0;
+
+        var overall = (plantingTotal + workTotal) / (plantingTotal + workTotal + pastAndFertTotal) * 100;
+
+        var yearlyRoiPieChartData = {
+            labels: ['Planting', 'Work', 'Past and Fert'],
+            datasets: [
+                {
+                    data: [plantingTotal, workTotal, pastAndFertTotal],
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.6)',
+                        'rgba(54, 162, 235, 0.6)',
+                        'rgba(75, 192, 192, 0.6)',
+                    ],
+                    borderColor: [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(75, 192, 192, 1)',
+                    ],
+                    borderWidth: 1
+                }
+            ]
+        };
+
+        return yearlyRoiPieChartData;
+    }
+
+    // Function to update yearly data
+    function updateYearlyData(yearIndex) {
+    // Display data for the selected year
+    document.getElementById('plantingData').innerText = 'Planting Data: ' + (plantingData[yearIndex] || 'N/A');
+    document.getElementById('workData').innerText = 'Work Data: ' + (workData[yearIndex] || 'N/A');
+    document.getElementById('pastAndFertData').innerText = 'Past and Fert Data: ' + (pastAndFertData[yearIndex] || 'N/A');
+
+    // Display the year in the currentYearLabel
+    var currentYearLabel = document.getElementById('currentYearLabel');
+    if (currentYearLabel) {
+        currentYearLabel.innerText = 'Year: ' + (crop_yearly_totals[yearIndex] ? crop_yearly_totals[yearIndex].year : 'N/A');
+    }
+}
+
+    // Add a Next button function
+    function nextYear1() {
+        currentYearIndex = (currentYearIndex + 1) % plantingData.length;
+
+        var newRoiPieChartData = getYearlyRoiPieChartData(currentYearIndex);
+        yearlyRoiPieChart.data = newRoiPieChartData;
+        yearlyRoiPieChart.update();
+
+        // Update the label based on your structure
+        document.getElementById('currentYearLabel').innerText = 'Year: ' + currentYearIndex;
+
+        // Update the yearly data display
+        updateYearlyData(currentYearIndex);
+    }
+</script>
