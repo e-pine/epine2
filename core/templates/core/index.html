@@ -348,7 +348,7 @@
             </div>
 <!-- --------------------------------------------Planted Crop------------------------------------------------------------------ -->
             <div class="card">
-              <a href="{% url 'crop_list' %}" class="card-success">
+              <a href="{% url 'crop_list' %}" class="card-info">
                 <div class="card-header">
                   <h3 class="card-title">Planted Crop</h3>
     
@@ -396,7 +396,7 @@
 
 <!--------------------------------------------- Harvest Crop ----------------------------------------------------------------------->
           <div class="card">
-            <a href="{% url 'har_high_quality' %}" class="card-info">
+            <a href="{% url 'har_high_quality' %}" class="card-success">
               <div class="card-header">
                 <h3 class="card-title">Harvested Crop</h3>
   
@@ -450,11 +450,185 @@
       </div>
     </div>
   </div>
+  <script>
+    var barChartCanvas = $('#harvestbarChart').get(0).getContext('2d');
+   
+   var barChartData = {
+       labels: [{% for year in years %}'{{ year }}',{% endfor %}],
+       datasets: [
+           {
+               label: 'Total Harvest',
+               backgroundColor: 'rgba(40, 167, 69, 0.7)',
+               borderColor: 'rgba(40, 167, 69, 0.7)',
+               data: [{% for value in ohby.values %}{{ value }},{% endfor %}],
+           },
+       ]
+   };
+   
+   var barChart = new Chart(barChartCanvas, {
+       type: 'bar',
+       data: barChartData,
+       options: {
+           responsive: true,
+           maintainAspectRatio: false,
+           scales: {
+               y: {
+                   beginAtZero: true
+               }
+           },
+           plugins: {
+               legend: {
+                   display: true,
+                   position: 'top'
+               },
+              //  title: {
+              //      display: true,
+              //      text: 'Total Harvest'
+              //  }
+           }
+       }
+   });
+   
+   setInterval(updateHarvestChart, 1000);
+   
+   </script>
+   <script>
+    var barChartCanvas = $('#revenuesbarChart').get(0).getContext('2d');
+  
+    var barChartData = {
+        labels: [
+            {% for year, totals in totals_by_year.items %}
+                '{{ year }}',
+            {% endfor %}
+        ],
+        datasets: [
+            // {
+            //     label: 'Bad Quality Pineaples',
+            //     backgroundColor: 'rgba(210, 214, 222, 1)',
+            //     borderColor: 'rgba(210, 214, 222, 1)',
+            //     data: [
+            //         {% for year, totals in totals_by_year.items %}
+            //             {{ totals.harvested_bad_total }},
+            //         {% endfor %}
+            //     ]
+            // },
+            // {
+            //     label: 'Good Quality Pineaples',
+            //       backgroundColor: 'rgba(60,141,188,0.9)',
+            //       borderColor: 'rgba(60,141,188,0.8)',
+            //       data: [
+            //           {% for year, totals in totals_by_year.items %}
+            //               {{ totals.harvested_good_total }},
+            //           {% endfor %}
+            //       ]
+            // },
+            {
+                label: 'Revenues',
+                backgroundColor: 'rgb(255, 193, 7, .59)',
+                borderColor: 'rgb(255, 193, 7, .59)',
+                data: [
+                    {% for year, totals in totals_by_year.items %}
+                        {{ totals.grand_total }},
+                    {% endfor %}
+                ]
+            }
+        ]
+    };
+  
+    var barChart = new Chart(barChartCanvas, {
+        type: 'bar',
+        data: barChartData,
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            },
+            plugins: {
+                legend: {
+                    display: true,
+                    position: 'top'
+                },
+                title: {
+                    display: true,
+                    text: 'Yearly Totals'
+                }
+            }
+        }
+    });
+  </script>
+  <script>
+    function updateChart() {
+        $.ajax({
+            url: '{% url "get_crop_chart_data" %}',
+            method: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                barChart.data.labels = data.labels;
+                barChart.data.datasets[0].data = data.total_planted_by_year;
+  
+                barChart.update();
+            },
+            error: function (error) {
+                console.log('Error fetching data:', error);
+            }
+        });
+    }
+  
+    var barChartCanvas = $('#cropbarChart').get(0).getContext('2d');
+  
+    var barChartData = {
+        labels: [...new Set([
+            {% for crop_data in combined_crop %}
+                '{{ crop_data.plant_date|date:"Y" }}',
+            {% endfor %}
+        ])],
+        datasets: [
+            {
+                label: 'Total Planted',
+                backgroundColor: 'rgba(23, 162, 184, 0.7)',
+                borderColor: 'rgba(23, 162, 184, 0.7)',
+                data: [
+                    // {% for year, total_planted in total_planted_by_year.items %}
+                    //     {{ total_planted }},
+                    // {% endfor %}
+                ],
+            },
+        ],
+    };
+  
+    var barChart = new Chart(barChartCanvas, {
+        type: 'bar', 
+        data: barChartData,
+        options: {
+            scales: {
+                x: {
+                    reverse: true, // Reverse the order of the labels on the x-axis
+                },
+            },
+            // Customize chart options here
+        }
+    });
+  
+    setInterval(updateChart, 0);
+  
+    // Sort crops by year
+    var cropsTable = $('#yourCropsTableId').DataTable({
+        order: [[2, 'desc']], 
+    });
+  </script>
+   
+   
+   {% include 'graph_scripts/expe_scripts.html' %}
 {% endblock content %}
 <!-- -----------------------------------------------NOTIFICATION ---------------------------------------- -->
 
     
 {% block script %}
+{% include 'graph_scripts/trend_scripts.html' %}
+{% include 'graph_scripts/roi.html' %}
 <script src="{% static 'core/admin.js' %}"></script>
 <!-- ----------------------------------------------Stocks Script-------------------------------------- -->
 
@@ -707,90 +881,5 @@
         }
     });
 </script>
-<!-- --------------------------------Crop----------------------------------------- -->
-
-<!-- ---------------------------------crop---------------------------------------------- -->
-
-
-<!-- ---------------------------FOR SALES TREND ------------------------------------------------- -->
-{% include 'graph_scripts/trend_scripts.html' %}
-{% include 'graph_scripts/roi.html' %}
-{% include 'graph_scripts/crop_chart_scripts.html' %}
-{% include 'graph_scripts/expe_scripts.html' %}
-<!-- -------------FOR EXPENSES--------------- -->
-
-
-<!-- --------------Revenues---------------------- -->
-<script>
-  var barChartCanvas = $('#revenuesbarChart').get(0).getContext('2d');
-
-  var barChartData = {
-      labels: [
-          {% for year, totals in totals_by_year.items %}
-              '{{ year }}',
-          {% endfor %}
-      ],
-      datasets: [
-          // {
-          //     label: 'Bad Quality Pineaples',
-          //     backgroundColor: 'rgba(210, 214, 222, 1)',
-          //     borderColor: 'rgba(210, 214, 222, 1)',
-          //     data: [
-          //         {% for year, totals in totals_by_year.items %}
-          //             {{ totals.harvested_bad_total }},
-          //         {% endfor %}
-          //     ]
-          // },
-          // {
-          //     label: 'Good Quality Pineaples',
-          //       backgroundColor: 'rgba(60,141,188,0.9)',
-          //       borderColor: 'rgba(60,141,188,0.8)',
-          //       data: [
-          //           {% for year, totals in totals_by_year.items %}
-          //               {{ totals.harvested_good_total }},
-          //           {% endfor %}
-          //       ]
-          // },
-          {
-              label: 'Revenues',
-              backgroundColor: 'rgb(255, 193, 7, .59)',
-              borderColor: 'rgb(255, 193, 7, .59)',
-              data: [
-                  {% for year, totals in totals_by_year.items %}
-                      {{ totals.grand_total }},
-                  {% endfor %}
-              ]
-          }
-      ]
-  };
-
-  var barChart = new Chart(barChartCanvas, {
-      type: 'bar',
-      data: barChartData,
-      options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          scales: {
-              y: {
-                  beginAtZero: true
-              }
-          },
-          plugins: {
-              legend: {
-                  display: true,
-                  position: 'top'
-              },
-              title: {
-                  display: true,
-                  text: 'Yearly Totals'
-              }
-          }
-      }
-  });
-</script>
-<!----------------------------- harvested--------------------------------- -->
-{% include 'crop_yield/harvest/harv_script.html' %}
-
-
 
 {% endblock script %}

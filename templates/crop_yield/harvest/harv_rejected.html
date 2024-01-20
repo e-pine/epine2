@@ -77,9 +77,9 @@
 
     var barChartData = {
         labels: [
-            {% for year, totals in totals_by_year.items %}
-                '{{ year }}',
-            {% endfor %}
+            // {% for year, totals in totals_by_year.items %}
+            //     '{{ year }}',
+            // {% endfor %}
         ],
         datasets: [
             
@@ -88,9 +88,9 @@
                 backgroundColor: 'rgba(255, 0, 0, 0.7)',
                 borderColor: 'rgba(255, 0, 0, 0.7)',
                 data: [
-                    {% for year, totals in totals_by_year.items %}
-                        {{ totals.harvested_rejected_total }},
-                    {% endfor %}
+                    // {% for year, totals in totals_by_year.items %}
+                    //     {{ totals.harvested_rejected_total }},
+                    // {% endfor %}
                 ],
             },
             
@@ -121,7 +121,17 @@
         }
     });
 
-    setInterval(updateHarvestChart, 2000);
+    setInterval(updateHarvestChart, 1000);
+
+    // SORTING TABLE
+</script>
+<script>
+    // sorting table
+    $(document).ready(function() {
+        $('#sampleTable').DataTable({
+            "order": [[2, 'dec']]
+        });
+    });
 </script>
     
     <!-- <script>
@@ -156,8 +166,3 @@
         });
       </script> -->
 {% endblock content %}
-{% block extrascripts %}
-    <script type="text/javascript" src="{% static 'js/plugins/jquery.dataTables.min.js' %}"></script>
-    <script type="text/javascript" src="{% static 'js/plugins/dataTables.bootstrap.min.js' %}"></script>
-    <script type="text/javascript">$('#sampleTable').DataTable();</script>
-{% endblock extrascripts %}

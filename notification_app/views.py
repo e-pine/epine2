@@ -27,6 +27,25 @@ def event(request, event_id):
     
     return render(request, 'crop_yield/tracking/event.html', context)
 
+def event2(request, event_id):
+    notification = get_object_or_404(BroadcastNotification, id=event_id)
+    event = get_object_or_404(BroadcastNotification, id=event_id)
+    events = FarmEvent.objects.all()
+    event_list = BroadcastNotification.objects.all()
+    notification_with_details = get_object_or_404(BroadcastNotification, id=event_id)
+    broadcast_notifications = BroadcastNotification.objects.prefetch_related('details').all()
+
+    context = {
+        'notification': notification, 
+        'events': events, 
+        'event_list': event_list,
+        'event':event,
+        'broadcast_notifications': broadcast_notifications,
+        'notification_with_details': notification_with_details
+    }
+    
+    return render(request, 'crop_yield/tracking/event2.html', context)
+
 def emp_event(request, event_id):
     notification = get_object_or_404(BroadcastNotification, id=event_id)
     event = get_object_or_404(BroadcastNotification, id=event_id)
@@ -269,13 +288,27 @@ def all_broadcast_notifications(request):
     out = []
     for notification in all_notifications:
         event_name = notification.name.event if notification.name else ""
+        status_color = get_status_color(notification.status)
         out.append({
             'title': event_name,
             'id': notification.id,
             'start': django_timezone.localtime(notification.broadcast_on).strftime("%Y-%m-%d %H:%M:%S"),
             'end': django_timezone.localtime(notification.end_on).strftime("%Y-%m-%d %H:%M:%S"),
+            'status': notification.status,
+            'backgroundColor': status_color['backgroundColor'],
+            'borderColor': status_color['borderColor'],
+            'textColor': status_color['textColor'],
         })
     return JsonResponse(out, safe=False)
+
+def get_status_color(status):
+    if status == 'Running':
+        return {'backgroundColor': '#ddd202', 'borderColor': '#ddd202', 'textColor': '#fff'}
+    elif status == 'Completed':
+        return {'backgroundColor': '#00a65a', 'borderColor': '#00a65a', 'textColor': '#fff'}
+    else:
+        return {'backgroundColor': '#f39c12', 'borderColor': '#f39c12', 'textColor': '#fff'}
+
 
 
 def cal_event(request):

@@ -75,6 +75,14 @@ def index(request):
         .annotate(total_planted=Sum('number_planted'))
         .order_by('plant_date')
     )
+
+    combined_crop = list(hawaii_crop) + list(pormosa_crop)
+
+    # Calculate total planted for each year
+    total_planted_by_year = {}
+    for crop_data in combined_crop:
+        year = crop_data['plant_date'].year
+        total_planted_by_year[year] = total_planted_by_year.get(year, 0) + crop_data['total_planted']
         
     crops = Crop.objects.all().order_by('-plant_date')
 
@@ -302,7 +310,6 @@ def index(request):
     # Start expense
     start_expenses = StartExpense.objects.all()
 
-    # Create a dictionary to store start_expenses by year
     start_expenses_by_year = {}
 
     for start_expense in start_expenses:
@@ -438,6 +445,45 @@ def index(request):
             'overall_harvested_rejected_total_harv': overall_harvested_rejected_total_harv,
             'overall_grand_total': overall_harvested_good_total_harv + overall_harvested_bad_total_harv + overall_harvested_rejected_total_harv,
         }
+
+    hgby = {}
+    for bp in BiddingProcess.objects.all().order_by('-date'):
+        year = bp.date.year
+        if year not in hgby:
+            hgby[year] = []
+        hgby[year].append(bp)
+        bp.total = bp.calculate_total_harvest()
+
+    # Fetch HarvestedBad data
+    hbby = {}
+    for hb in HarvestedBad.objects.all().order_by('-date'):
+        year = hb.date.year
+        if year not in hbby:
+            hbby[year] = []
+        hbby[year].append(hb)
+        hb.total = hb.calculate_total_harvest()
+
+    # Fetch RejectedPine data
+    hrby = {}
+    for rp in RejectedPine.objects.all().order_by('-date'):
+        year = rp.date.year
+        if year not in hrby:
+            hrby[year] = []
+        hrby[year].append(rp)
+        rp.total = rp.calculate_total_harvest()
+
+    harv_all_years = set(hgby.keys()) | set(hbby.keys()) | set(hrby.keys())
+
+    overall_harvest_by_year = {
+        year: sum(
+            b.total for b in hgby.get(year, [])
+        ) + sum(
+            h.total for h in hbby.get(year, [])
+        ) + sum(
+            i.total for i in hrby.get(year, [])
+        ) for year in harv_all_years
+    }
+
 # ___________________________________________________________________________________________________________________________
 # -----------------PESONAL CHAT-----------------------
     current_user = request.user.username
@@ -450,10 +496,17 @@ def index(request):
     context = {
 # -----------------PERSONAL CHAT---------------------
         'chat_messages': chat_messages,
+        'years': list(harv_all_years),
+        'hgd': [sum(b.total for b in hgby.get(year, [])) for year in harv_all_years],
+        'hbd': [sum(h.total for h in hbby.get(year, [])) for year in harv_all_years],
+        'hrd': [sum(i.total for i in hrby.get(year, [])) for year in harv_all_years],
+        'ohby': overall_harvest_by_year,
 # -----------------PERSONAL CHAT------------------
 
         'variety': variety,
         'crops': crops,
+        'combined_crop': combined_crop,
+        'total_planted_by_year': total_planted_by_year,
         # 'total_expenses': total_expenses,
       
          

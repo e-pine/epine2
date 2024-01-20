@@ -7,7 +7,7 @@
     <div class="container-fluid">
       <div class="row mb-2">
         <div class="col-sm-6">
-          <a href="{% url 'farm_event' %}"><h1 class="m-0" style="color: black;">Farm Activity</h1></a>
+          <a href="{% url 'farm_event' %}"><h1 class="m-0" style="color: black;">Farm Activity(Completed)</h1></a>
        </div>
     </div><!-- /.container-fluid -->
   </div>
@@ -25,9 +25,9 @@
             <table class="table table-hover dataTable no-footer" id="" role="grid" aria-describedby="sampleTable_info">
               <tbody>
                   {% for events in event_list %}
-                  {% if events.status == 'Running' %}
+                  {% if events.status != 'Running' %}
                   <tr role="row" class="odd">
-                      <td class="sorting_1"><a href="{% url 'event' events.id %}">{{ events.name }}</a></td>
+                      <td class="sorting_1"><a href="{% url 'event2' events.id %}">{{ events.name }}</a></td>
                       <!-- <td><small>{{ events.status }}</small></td> -->
                   </tr>
                   {% endif %}

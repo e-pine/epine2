@@ -220,7 +220,7 @@ def bidder_win_list_delete(request, pk):
 #------------------------------------------------- Low Quality-----------------------------------------------------------------#
 @login_required(login_url='login')
 def bidder_win_lis_low(request):
-    harvested_bad = HarvestedBad.objects.all().order_by('date')
+    harvested_bad = HarvestedBad.objects.all().order_by('-date')
 
     harvested_bad_by_year = {}
 

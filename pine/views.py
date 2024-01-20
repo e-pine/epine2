@@ -1859,14 +1859,19 @@ def har_poor_quality(request):
         rejected_form = RejectedForm()
 
     # Sum the totals for each year
-    totals_by_year = {}
+    # totals_by_year = {}
 
-    for year in harvested_bad_by_year.keys():
-        harvested_bad_total = sum(h.total for h in harvested_bad_by_year.get(year, []))
+    # for year in harvested_bad_by_year.keys():
+    #     harvested_bad_total = sum(h.total for h in harvested_bad_by_year.get(year, []))
 
-        totals_by_year[year] = {
-            'harvested_bad_total': harvested_bad_total,
-        }
+    #     totals_by_year[year] = {
+    #         'harvested_bad_total': harvested_bad_total,
+    #     }
+    harv_all_years = set(harvested_bad_by_year.keys())
+    data = {
+        'years': list(harv_all_years),
+        'harvested_bad_data': [sum(h.total for h in harvested_bad_by_year.get(year, [])) for year in harv_all_years],
+    }
 
 # -----------------PERSONAL CHAT----------------------
     current_user = request.user.username
@@ -1882,7 +1887,7 @@ def har_poor_quality(request):
 # -----------------PERSONAL CHAT----------------------
         'harvested_bad_by_year': harvested_bad_by_year,
       
-        'totals_by_year': totals_by_year,
+        'data': data,
         'bad_quality_form': bad_quality_form,
         'rejected_form': rejected_form
     }

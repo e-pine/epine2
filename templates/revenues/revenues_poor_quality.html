@@ -6,7 +6,7 @@
     <div class="content-header">
         <div class="card">
             <div class="card-header">
-                <h3 class="card-title">For bad quality of pineapples</h3>
+                <h3 class="card-title">For low quality of pineapples</h3>
         
                 <div class="card-tools">
                     <a href="{% url 'harvest_revenues' %}">
@@ -22,56 +22,30 @@
                 </div>
                 <br>
                 <div class="container-fluid">
-                    <div class="row mb-2">
-                        <!-- <table class="table table-bordered table-hover">
-                            <thead>
-                                <tr class="bg-secondary">
-                                    <th>Year</th>
-                                    <th>Variety</th>
-                                    <th>Total Value</th>
+                    <table class="table table-hover table-bordered dataTable no-footer" id="sampleTable" role="grid" aria-describedby="sampleTable_info">
+                        <thead>
+                            <tr role="row" class="bg-secondary">
+                                <!-- <th class="sorting_asc" tabindex="0" aria-controls="sampleTable" rowspan="1" colspan="1"  style="width: 102.141px;">Year</th> -->
+                                <th class="sorting" tabindex="0" aria-controls="sampleTable" rowspan="1" colspan="1"  style="width: 102.141px;">Variety</th>
+                                <th class="sorting" tabindex="0" aria-controls="sampleTable" rowspan="1" colspan="1"  style="width: 102.141px;">Total Value</th>
+                                <th class="sorting" tabindex="0" aria-controls="sampleTable" rowspan="1" colspan="1"  style="width: 102.141px;">Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                          {% for year, harvesteds_by_year in harvested_bad_by_year.items %}
+                          {% for harv_bad in harvesteds_by_year %}
+                                <tr role="row" class="odd">
+                                    <!-- {% if forloop.first %}
+                                    <td class="sorting_1" rowspan="{{ harvesteds_by_year|length }}">{{ year }}</td>
+                                    {% endif %} -->
+                                    <td>{{ harv_bad.category }}</td>
+                                    <td>{{ harv_bad.total|format_number }}</td>
+                                    <td>{{ harv_bad.date }}</td>
                                 </tr>
-                            </thead>
-                            <tbody>
-                                {% for year, harvesteds_by_year in harvested_bad_by_year.items %}
-                                    {% for harv_bad in harvesteds_by_year %}
-                                        <tr>
-                                            {% if forloop.first %}
-                                                <td rowspan="{{ harvesteds_by_year|length }}">{{ year }}</td>
-                                            {% endif %}
-                                            <td>{{ harv_bad.category }}</td>
-                                            <td>Php. {{ harv_bad.total|format_number }}</td>
-                                        </tr>
-                                    {% endfor %}
                                 {% endfor %}
-                            </tbody>
-                        </table> -->
-                        <table class="table table-hover table-bordered dataTable no-footer" id="sampleTable" role="grid" aria-describedby="sampleTable_info">
-                            <thead>
-                                <tr role="row" class="bg-secondary">
-                                    <!-- <th class="sorting_asc" tabindex="0" aria-controls="sampleTable" rowspan="1" colspan="1"  style="width: 102.141px;">Year</th> -->
-                                    <th class="sorting" tabindex="0" aria-controls="sampleTable" rowspan="1" colspan="1"  style="width: 102.141px;">Variety</th>
-                                    <th class="sorting" tabindex="0" aria-controls="sampleTable" rowspan="1" colspan="1"  style="width: 102.141px;">Total Value</th>
-                                    <th class="sorting" tabindex="0" aria-controls="sampleTable" rowspan="1" colspan="1"  style="width: 102.141px;">Date</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                              {% for year, harvesteds_by_year in harvested_bad_by_year.items %}
-                              {% for harv_bad in harvesteds_by_year %}
-                                    <tr role="row" class="odd">
-                                        <!-- {% if forloop.first %}
-                                        <td class="sorting_1" rowspan="{{ harvesteds_by_year|length }}">{{ year }}</td>
-                                        {% endif %} -->
-                                        <td>{{ harv_bad.category }}</td>
-                                        <td>{{ harv_bad.total|format_number }}</td>
-                                        <td>{{ harv_bad.date }}</td>
-                                    </tr>
-                                    {% endfor %}
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                            
-        
-                    </div>
+                            {% endfor %}
+                        </tbody>
+                    </table>
                 </div>
             </div>
             <!-- /.card-body -->
@@ -127,9 +101,9 @@
     
         var barChartData = {
             labels: [
-                {% for year, totals in totals_by_year.items %}
-                    '{{ year }}',
-                {% endfor %}
+                // {% for year, totals in totals_by_year.items %}
+                //     '{{ year }}',
+                // {% endfor %}
             ],
             datasets: [
                 {
@@ -137,9 +111,9 @@
                     backgroundColor: 'rgba(108, 117, 125, 0.7)',
                     borderColor: 'rgba(108, 117, 125, 0.7)',
                     data: [
-                        {% for year, totals in totals_by_year.items %}
-                            {{ totals.harvested_bad_total }},
-                        {% endfor %}
+                        // {% for year, totals in totals_by_year.items %}
+                        //     {{ totals.harvested_bad_total }},
+                        // {% endfor %}
                     ]
                 },
             ]
@@ -172,7 +146,14 @@
         // Update the chart every 5 seconds (adjust the interval as needed)
         setInterval(updateChart, 1000);  // Change 5000 to the desired interval in milliseconds
     </script>
-    
+    <script>
+        // sorting table
+        $(document).ready(function() {
+            $('#sampleTable').DataTable({
+                "order": [[2, 'dec']]
+            });
+        });
+    </script>
     <script>
         $(document).ready(function () {
           // Handle delete button click
@@ -205,8 +186,3 @@
         });
       </script>
 {% endblock content %}
-{% block extrascripts %}
-    <script type="text/javascript" src="{% static 'js/plugins/jquery.dataTables.min.js' %}"></script>
-    <script type="text/javascript" src="{% static 'js/plugins/dataTables.bootstrap.min.js' %}"></script>
-    <script type="text/javascript">$('#sampleTable').DataTable();</script>
-{% endblock extrascripts %}

@@ -1,13 +1,14 @@
 {% extends 'base.html' %}
 {% load static %}
-{% block title %}List User{% endblock title %}
+{% block title %}List of Winners From Bidding{% endblock title %}
 {% block content %}
 {% load custom_filters %}
   <div class="content-header">
     <div class="container-fluid">
       <div class="row mb-2">
         <div class="col-sm-6">
-          <h1 class="m-0">Bid Winners</h1>
+          <h1 class="m-0">List of Winners From Bidding</h1>
+          <h5 style="font-style: italic;">(Low-Quality)</h5>
        </div>
        <div class="col-sm-6">
         <ol class="breadcrumb float-sm-right">
@@ -95,12 +96,12 @@
     });
   });
 </script>
-
+<script>
+  // sorting table
+  $(document).ready(function() {
+      $('#sampleTable').DataTable({
+          "order": [[2, 'dec']]
+      });
+  });
+</script>
 {% endblock content %}
-
-{% block extrascripts %}
-    <script type="text/javascript" src="{% static 'js/plugins/jquery.dataTables.min.js' %}"></script>
-    <script type="text/javascript" src="{% static 'js/plugins/dataTables.bootstrap.min.js' %}"></script>
-    <script type="text/javascript">$('#sampleTable').DataTable();</script>
-{% endblock extrascripts %}
-

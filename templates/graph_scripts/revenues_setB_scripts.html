@@ -49,11 +49,11 @@
 
     var revenues_harvest_uniqueYears1 = [...new Set(revenues_mergedData1.map(item => item.year))].sort();
   
-    var revenues_datasetsByYear = {};
+    var revenues_datasetsByYear1 = {};
 
     revenues_harvest_uniqueYears1.forEach(year => {
         var revenues_filteredData = revenues_mergedData1.filter(item => item.categoryId === revenues_selectedCategoryId1 && item.year === year);
-        revenues_datasetsByYear[year] = {
+        revenues_datasetsByYear1[year] = {
             label: year,
             data: [revenues_filteredData.reduce((acc, item) => acc + (item.totalBuyPine || 0), 0),
                 revenues_filteredData.reduce((acc, item) => acc + (item.total || 0), 0),
@@ -81,7 +81,7 @@
         type: 'pie',
         data: {
             labels: ['Set-A', 'Set-B', 'Rejected'],
-            datasets: [revenues_datasetsByYear[revenues_harvest_uniqueYears1[revenues_harvest_currentYearIndex1]]]
+            datasets: [revenues_datasetsByYear1[revenues_harvest_uniqueYears1[revenues_harvest_currentYearIndex1]]]
         },
         options: {
             plugins: {
@@ -99,15 +99,15 @@
     function revenues_getCategoryName1(categoryId) {
         // Function to get the category name based on the selected category ID
         var data = [...revenues_harvestedGoodData1, ...revenues_harvestedBadData1, ...revenues_rejectedPinesData1];
-        var categoryItem = data.find(item => item.categoryId === categoryId);
+        var categoryItem1 = data.find(item => item.categoryId === categoryId);
 
-        return categoryItem ? categoryItem.categoryName : '';
+        return categoryItem1 ? categoryItem1.categoryName : '';
     }
 
     function revenues_updateCategoryTitle1() {
         // Use the category name from the filtered data for the current year and selected category
-        var revenues_currentCategoryName = revenues_getCategoryName1(revenues_selectedCategoryId1);
-        revenues_categoryTitle1.innerText = 'Variety: ' + revenues_currentCategoryName;
+        var revenues_currentCategoryName1 = revenues_getCategoryName1(revenues_selectedCategoryId1);
+        revenues_categoryTitle1.innerText = 'Variety: ' + revenues_currentCategoryName1;
     }
 
     // Initial update
@@ -116,13 +116,14 @@
     function revenues_harvest_nextYear1() {
         revenues_harvest_currentYearIndex1 = (revenues_harvest_currentYearIndex1 + 1) % revenues_harvest_uniqueYears1.length;
 
-        var newDataset = revenues_datasetsByYear[revenues_harvest_uniqueYears1[revenues_harvest_currentYearIndex1]];
-        revenues_harvestedMixedPieChart1.data.datasets = [newDataset];
-        var currentCategoryName = revenues_getCategoryName1(revenues_selectedCategoryId1);
-        revenues_harvestedMixedPieChart1.options.plugins.title.text = 'Year: ' + revenues_harvest_uniqueYears1[revenues_harvest_currentYearIndex1] + ' - Variety: ' + currentCategoryName;
+        var newDataset1 = revenues_datasetsByYear1[revenues_harvest_uniqueYears1[revenues_harvest_currentYearIndex1]];
+        revenues_harvestedMixedPieChart1.data.datasets = [newDataset1];
+        var currentCategoryName1 = revenues_getCategoryName1(revenues_selectedCategoryId1);
+        revenues_harvestedMixedPieChart1.options.plugins.title.text = 'Year: ' + revenues_harvest_uniqueYears1[revenues_harvest_currentYearIndex1] + ' - Variety: ' + currentCategoryName1;
         revenues_harvestedMixedPieChart1.update();
-
 
         revenues_updateCategoryTitle1();
         }
+
+        console.log("Next Year button clicked!");
 </script>

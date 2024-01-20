@@ -64,7 +64,7 @@ from pine.models import *
 from django.db.models import Sum
 
 def get_harvest_chart_data(request):
-    # Fetch BiddingProcess data
+
     harvested_good_by_year = {}
 
     for bidding_process in BiddingProcess.objects.all().order_by('-date'):
@@ -95,35 +95,57 @@ def get_harvest_chart_data(request):
         rejected_pine.total = rejected_pine.calculate_total_harvest()
 
     harv_all_years = set(harvested_good_by_year.keys()) | set(harvested_bad_by_year.keys()) | set(harvested_rejected_by_year.keys())
+
+    overall_harvest_by_year = {
+        year: sum(
+            b.total for b in harvested_good_by_year.get(year, [])
+        ) + sum(
+            h.total for h in harvested_bad_by_year.get(year, [])
+        ) + sum(
+            i.total for i in harvested_rejected_by_year.get(year, [])
+        ) for year in harv_all_years
+    }
     
     data = {
         'years': list(harv_all_years),
         'harvested_good_data': [sum(b.total for b in harvested_good_by_year.get(year, [])) for year in harv_all_years],
         'harvested_bad_data': [sum(h.total for h in harvested_bad_by_year.get(year, [])) for year in harv_all_years],
         'harvested_rejected_data': [sum(i.total for i in harvested_rejected_by_year.get(year, [])) for year in harv_all_years],
+        'overall_harvest_by_year': overall_harvest_by_year,
     }
 
     return JsonResponse(data)
 
 def get_crop_chart_data(request):
     hawaii_crop = (
-        Crop.objects.filter(category__name='Hawaii')
+        Crop.objects.filter(category__id=1)
         .values('plant_date')
         .annotate(total_planted=Sum('number_planted'))
         .order_by('-plant_date')
     )
 
     pormosa_crop = (
-        Crop.objects.filter(category__name='Pormosa')
+        Crop.objects.filter(category__id=2)
         .values('plant_date')
         .annotate(total_planted=Sum('number_planted'))
         .order_by('-plant_date')
     )
 
+    # Calculate total planted for each year
+    total_planted_by_year = {}
+    for crop_data in hawaii_crop:
+        year = crop_data['plant_date'].strftime('%Y')
+        total_planted_by_year[year] = total_planted_by_year.get(year, 0) + crop_data['total_planted']
+
+    for crop_data in pormosa_crop:
+        year = crop_data['plant_date'].strftime('%Y')
+        total_planted_by_year[year] = total_planted_by_year.get(year, 0) + crop_data['total_planted']
+
     data = {
         'labels': [crop_data['plant_date'].strftime('%Y') for crop_data in hawaii_crop],
         'hawaii_data': [crop_data['total_planted'] for crop_data in hawaii_crop],
         'pormosa_data': [crop_data['total_planted'] for crop_data in pormosa_crop],
+        'total_planted_by_year': [total_planted_by_year.get(year, 0) for year in total_planted_by_year],
     }
 
     return JsonResponse(data)

@@ -17,7 +17,7 @@ class BroadcastNotification(models.Model):
     name = models.ForeignKey(FarmEvent, on_delete=models.CASCADE, null=True)
     variety = models.ForeignKey(Category, on_delete=models.CASCADE, null=True)
     # event = models.ManyToManyField(FarmEvent)
-    broadcast_on = models.DateTimeField(null=True, blank=True)
+    broadcast_on = models.DateTimeField(null=True, blank=False)
     end_on = models.DateTimeField(null=True, blank=True)
     sent = models.BooleanField(default=False)
     status = models.CharField(max_length=20, default='Running')

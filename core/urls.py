@@ -16,18 +16,20 @@ urlpatterns = [
     path('reset/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(template_name="user/password_reset_set.html",form_class=CustomSetPasswordForm), name="password_reset_confirm"),
     path('reset_password_complete/', auth_views.PasswordResetCompleteView.as_view(template_name="user/password_reset_done.html"), name="password_reset_complete"),
 # tracking
-    path('farm_event/', not_view.farm_event, name="farm_event"),
     path('event_detail/<int:event_id>/', not_view.event_detail, name='event_detail'),
     path('farm_event_update/<int:event_id>/', not_view.farm_event_update, name="farm_event_update"),
     path('update_farm_event/<int:pk>/', not_view.update_farm_event, name="update_farm_event"),
-    path('farm_event_list/', not_view.farm_event_list, name="farm_event_list"),
+    
     path('customize_farm_event/', not_view.customize_farm_event, name="customize_farm_event"),
     path('customize_farm_event_update/<int:pk>/', not_view.customize_farm_event_update, name='customize_farm_event_update'),
     path('customize_farm_event_delete/<int:pk>/', not_view.customize_farm_event_delete, name="customize_farm_event_delete"),
-    # urls.py
 
-    path('farm_event_list_completed/', not_view.farm_event_list_completed, name="farm_event_list_completed"),
-    path('event/<int:event_id>/', not_view.event, name='event'),
+    path('farm-activities/running/', not_view.farm_event_list, name="farm_event_list"),
+    path('farm-activities/completed/', not_view.farm_event_list_completed, name="farm_event_list_completed"),
+    path('farm-activities/calendar/', not_view.farm_event, name="farm_event"),
+
+    path('farm-activity/<int:event_id>/', not_view.event, name='event'),
+    path('farm-activity/<int:event_id>/', not_view.event2, name='event2'),
     path('all_broadcast_notifications/', not_view.all_broadcast_notifications, name='all_broadcast_notifications'),
     # path('add_broadcast_notification/', not_view.add_broadcast_notification, name='add_broadcast_notification'), 
 
@@ -57,14 +59,14 @@ urlpatterns = [
     path('activate/<uidb64>/<token>', user_view.activate, name="activate"),
 
 
-    path('list_user/', views.user_list, name="list-user"),
+    path('user-list/', views.user_list, name="list-user"),
     path('user_delete/<int:pk>/', views.user_delete, name="user_delete"),
 
     path('employee/', views.employee, name="empl-page"),
-    path('emp_farm_events/', views.emp_farm_events, name="emp_farm_events"),
-    path('emp_farm_planting/', views.emp_farm_planting, name="emp_farm_planting"),
-    path('emp_farm_labor/', views.emp_farm_labor, name="emp_farm_labor"),
-    path('emp_farm_fer_pes/', views.emp_farm_fer_pes, name="emp_farm_fer_pes"),
+    path('farm-activities/', views.emp_farm_events, name="emp_farm_events"),
+    path('planting/', views.emp_farm_planting, name="emp_farm_planting"),
+    path('works/', views.emp_farm_labor, name="emp_farm_labor"),
+    path('fertilizer&pesticide/', views.emp_farm_fer_pes, name="emp_farm_fer_pes"),
     path('emp_event/<int:event_id>/', not_view.emp_event, name="emp_event"),
     path('edit_emp_event/<int:event_id>/', not_view.edit_emp_event, name='edit_emp_event'),
 
@@ -76,9 +78,9 @@ urlpatterns = [
     path('bidding_rooms_rej/', views.bidding_rooms_rej, name="bidding_rooms_rej"),
 
     path('crop/', pine_view.crop, name="crop"),
-    path('category/', pine_view.category, name="category"),
+    path('pineapple-variety/', pine_view.category, name="category"),
 
-    path('crop_list/', pine_view.crop_list, name="crop_list"),
+    path('planted-crop/', pine_view.crop_list, name="crop_list"),
 
     path('crop_expense/', pine_view.crop_expense, name="crop_expense"),
     path('expenses/planting', pine_view.expe_planting, name="expe_planting"),
@@ -102,12 +104,12 @@ urlpatterns = [
     path('harvest_bad_delete/<int:pk>/', pine_view.harvest_bad_delete, name="harvest_bad_delete"),
     path('rejected_pines_update/<int:pk>/', pine_view.rejected_pines_update, name='rejected_pines_update'),
     path('rejected_pines_delete/<int:pk>/', pine_view.rejected_pines_delete, name="rejected_pines_delete"),
-    path('sales_trend/', pine_view.sales_trends, name="sales_trend"),
+    path('data-analysis/', pine_view.sales_trends, name="sales_trend"),
 
-    path('harvest_revenues/', pine_view.harvest_revenues, name="harvest_revenues"),
-    path('revenues/good-quality/', pine_view.revenues_goodquality, name="revenues_goodquality"),
-    path('revenues/bad-quality/', pine_view.revenues_badquality, name="revenues_badquality"),
-    path('revenues/rejected/', pine_view.revenues_rejected, name="revenues_rejected"),
+    path('harvested-revenues/', pine_view.harvest_revenues, name="harvest_revenues"),
+    path('harvested-revenues/good-quality/', pine_view.revenues_goodquality, name="revenues_goodquality"),
+    path('harvested-revenues/bad-quality/', pine_view.revenues_badquality, name="revenues_badquality"),
+    path('harvested-revenues/rejected/', pine_view.revenues_rejected, name="revenues_rejected"),
     
 
     path('cat_delete/<int:pk>/', pine_view.cat_delete, name="cat_delete"),
@@ -121,7 +123,7 @@ urlpatterns = [
     path('rooms/', chat_view.rooms, name="rooms"),
     path('bidding/high-quality', chat_view.bidding, name="bidding"),
     path('bidding_update/<int:pk>/', chat_view.bidding_update, name='bidding_update'),
-    path('bidder_win_list/', chat_view.bidder_win_list, name="bidder_win_list"),
+    path('bidder-winners-list/high-quality/', chat_view.bidder_win_list, name="bidder_win_list"),
     path('top-bidders/set/A', chat_view.leaderboard, name='leaderboard'),
     path('top-bidders/set/B', chat_view.leaderboard_b, name='leaderboard_b'),
     path('top-bidders/rejected', chat_view.leaderboard_c, name='leaderboard_c'),
@@ -133,12 +135,12 @@ urlpatterns = [
     path('bidding/low-quality/', chat_view.bidding_low_quality, name="bidding_low_quality"),
     path('bidding/low-quality/<slug:slug>/', chat_view.roomlow, name="roomlow"),
     path('roomlow_delete/<int:pk>/', chat_view.roomlow_delete, name='roomlow_delete'),
-    path('bidder_win_lis_low/', chat_view.bidder_win_lis_low, name="bidder_win_lis_low"),
+    path('bidder-winners-list/low-quality/', chat_view.bidder_win_lis_low, name="bidder_win_lis_low"),
 
     path('bidding/rejected/', chat_view.bidding_rejected, name="bidding_rejected"),
     path('bidding/rejected/<slug:slug>/', chat_view.roomrejected, name="roomrej"),
     path('roomreject_delete/<int:pk>/', chat_view.roomreject_delete, name='roomreject_delete'),
-    path('bidder_win_lis_rejected/', chat_view.bidder_win_lis_rejected, name="bidder_win_lis_rejected"),
+    path('bidder-winners-list/rejected/', chat_view.bidder_win_lis_rejected, name="bidder_win_lis_rejected"),
 
     path('chat/', chat_view.pm, name='home'),
     path('messages/<str:username>/', chat_view.chatPage, name='chat'),
