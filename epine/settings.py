@@ -99,20 +99,20 @@ ASGI_APPLICATION = 'epine.asgi.application'
 #     },
 # }
 
-CHANNEL_LAYERS = {
-    "default": {
-        "BACKEND": "channels_redis.core.RedisChannelLayer",
-        "CONFIG": {
-            "hosts": [os.environ.get('REDIS_url', 'redis://localhost:6379')],
-        },
-    },
-}
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
     }
+}
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [os.environ.get('REDIS_URL', 'redis://localhost:6379')],
+        },
+    },
 }
 
 # DATABASES = {
@@ -126,9 +126,8 @@ DATABASES = {
 
 import dj_database_url
 db_from_env = dj_database_url.config(conn_max_age=600)
+#DATABASES['default'] = dj_database_url.config(default='postgres://...'}
 DATABASES['default'].update(db_from_env)
-
-DATABASES = {'default': dj_database_url.config(default=os.environ.get('DATABASE_URL'))}
 
 # DATABASES = {
 #     "default": {
