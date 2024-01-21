@@ -187,8 +187,6 @@ MEDIA_URL = 'images/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
-SECURE_SSL_REDIRECT = True
-
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'static/dist/img')
 
