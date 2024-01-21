@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-(&m&zq2p=bzwc8%_$)+ax^9-4#)yqdpww34ibv_v$sf!u$fzih
 DEBUG = True
 
 # ALLOWED_HOSTS = ['192.168.254.101']
-ALLOWED_HOSTS = ['epine-b8d8842f6217.herokuapp.com', '127.0.0.1:8000']
+ALLOWED_HOSTS = ['*', 'localhost']
 
 
 # Application definition
@@ -90,7 +90,6 @@ TEMPLATES = [
 WSGI_APPLICATION = 'epine.wsgi.application'
 ASGI_APPLICATION = 'epine.asgi.application'
 
-SECURE_REFERRER_POLICY = ['same-origin']
 
 
 # Database
@@ -187,6 +186,10 @@ MEDIA_URL = 'images/'
 
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+SECURE_SSL_REDIRECT = True
+
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'static/dist/img')
 
