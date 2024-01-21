@@ -65,9 +65,12 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'epine.urls'
+
 SECURE_REFERRER_POLICY = ['origin']
+CSRF_COOKIE_SECURE = True
 SESSION_COOKIE_SECURE = True
-SESSION_COOKIE_SECURE = True
+CSRF_FAILURE_VIEW = 'path.to.your.custom.csrf_failure_view'
+
 
 TEMPLATES = [
     {
