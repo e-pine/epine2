@@ -25,7 +25,8 @@ SECRET_KEY = 'django-insecure-(&m&zq2p=bzwc8%_$)+ax^9-4#)yqdpww34ibv_v$sf!u$fzih
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['epine-b8d8842f6217.herokuapp.com']
+# ALLOWED_HOSTS = ['192.168.254.101']
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -53,9 +54,6 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-
-    'whitenoise.middleware.WhiteNoiseMiddleware',
-
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -99,13 +97,6 @@ ASGI_APPLICATION = 'epine.asgi.application'
 #     },
 # }
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
-
 CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
@@ -114,6 +105,18 @@ CHANNEL_LAYERS = {
         },
     },
 }
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
+}
+
+import dj_database_url
+db_from_env = dj_database_url.config(conn_max_age=600)
+DATABASES['default'].update(db_from_env)
+
 # DATABASES = {
 #     'default': {
 #         'ENGINE': 'django.db.backends.mysql',
@@ -123,10 +126,7 @@ CHANNEL_LAYERS = {
 #     }
 # }
 
-import dj_database_url
-db_from_env = dj_database_url.config(conn_max_age=600)
-#DATABASES['default'] = dj_database_url.config(default='postgres://...'}
-DATABASES['default'].update(db_from_env)
+
 
 # DATABASES = {
 #     "default": {
@@ -177,7 +177,7 @@ STATIC_URL = 'static/'
 
 MEDIA_URL = 'images/'
 
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static')
@@ -198,7 +198,8 @@ CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_TIMEZONE = 'Asia/Manila'
 
-CELERY_RESULT_BACKEND = 'db+mysql://root:root1234@localhost/ep_final'
+# CELERY_RESULT_BACKEND = 'db+mysql://root:root1234@localhost/ep_final'
+CELERY_RESULT_BACKEND = 'ep_final'
 
 # celery beat 
 CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
