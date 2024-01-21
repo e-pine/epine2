@@ -16,14 +16,8 @@ from django.db.models import Sum, F
 from django.db.models.functions import ExtractYear
 from decimal import Decimal
 from collections import defaultdict
-from django.http import HttpResponseForbidden
-from django.views import View
 
 from django.db.models import Count
-
-class CustomCSRFFailureView(View):
-    def get(self, request, *args, **kwargs):
-        return HttpResponseForbidden("CSRF verification failed.")
 
 def error_404(request,exception):
     return render(request, '404.html')

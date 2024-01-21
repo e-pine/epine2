@@ -68,7 +68,6 @@ ROOT_URLCONF = 'epine.urls'
 
 CSRF_COOKIE_SECURE = True
 SESSION_COOKIE_SECURE = True
-CSRF_FAILURE_VIEW = 'core.views.CustomCSRFFailureView'
 
 TEMPLATES = [
     {
