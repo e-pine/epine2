@@ -66,8 +66,9 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'epine.urls'
 
-CSRF_COOKIE_SECURE = True
-SESSION_COOKIE_SECURE = True
+CSRF_TRUSTED_ORIGINS = ["https://epine-b8d8842f6217.herokuapp.com"]
+# CSRF_COOKIE_SECURE = True
+# SESSION_COOKIE_SECURE = True
 
 TEMPLATES = [
     {
@@ -187,7 +188,7 @@ MEDIA_URL = 'images/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
-SECURE_SSL_REDIRECT = False
+# SECURE_SSL_REDIRECT = False
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'static/dist/img')
 
