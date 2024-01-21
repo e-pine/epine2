@@ -146,6 +146,7 @@ urlpatterns = [
     path('messages/<str:username>/', chat_view.chatPage, name='chat'),
 
     path('notifications/', views.all_notifications, name='all_notifications'),
+    path('csrf-failure/', views.CustomCSRFFailureView.as_view(), name='custom_csrf_failure'),
 
 # ----------------sample it will be deleted after--------------------------
 
