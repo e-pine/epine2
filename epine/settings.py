@@ -88,9 +88,6 @@ WSGI_APPLICATION = 'epine.wsgi.application'
 ASGI_APPLICATION = 'epine.asgi.application'
 
 SECURE_REFERRER_POLICY = ['same-origin']
-CSRF_COOKIE_SECURE = True
-SESSION_COOKIE_SECURE = True
-SECURE_SSL_REDIRECT = True
 
 
 # Database
