@@ -66,7 +66,6 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'epine.urls'
 SECURE_REFERRER_POLICY = ['origin']
-SECURE_SSL_REDIRECT = True
 
 TEMPLATES = [
     {
