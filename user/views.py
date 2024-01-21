@@ -82,8 +82,9 @@ def user_register(request):
     context = {'form': form, 'page': page}
     return render(request, 'register.html', context)
 
-
+from django.views.decorators.csrf import csrf_protect
 @unauthenticated_user
+@csrf_protect
 def user_login(request):
     page = 'login'
     if request.method == 'POST':
