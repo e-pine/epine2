@@ -9,7 +9,7 @@ class RoomForm(forms.ModelForm):
 
         labels = {
             'category': 'Variety',
-            'slug': 'Room'
+            'slug': 'Room Tag'
         }
 
     def __init__(self, *args, **kwargs):
