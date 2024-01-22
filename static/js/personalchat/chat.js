@@ -2,7 +2,7 @@ const id = JSON.parse(document.getElementById('json-username').textContent);
 const message_username = JSON.parse(document.getElementById('json-message-username').textContent);
 const receiver = JSON.parse(document.getElementById('json-username-receiver').textContent);
 const socket = new WebSocket(
-    'ws://' + window.location.host + '/ws/' + id + '/'
+    'wss://' + window.location.host + '/ws/' + id + '/'
 );
 
 socket.onopen = function (e) {

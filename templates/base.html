@@ -63,7 +63,7 @@
         const roomName = JSON.parse(document.getElementById('room-name').textContent);
 
         const notificationSocket = new WebSocket(
-            'ws://'
+            'wss://'
             + window.location.host
             + '/ws/notification/'
             + roomName
